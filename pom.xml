@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+    <groupId>lenskit-graphchi-native</groupId>
+    <artifactId>lenskit-graphchi-native</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+    <name>LensKit-GraphChi-Native</name>
+    <description>Collaborative filtering toolkit from GroupLens Research supported by GraphChi by Carnegie Mellon University</description>
+    <url>${lenskit.web.url}</url>
+    <organization>
+        <name>GroupLens Research</name>
+        <url>http://www.grouplens.org</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>LGPLv2+</name>
+            <url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <issueManagement>
+        <system>Trac</system>
+        <url>http://dev.grouplens.org/trac/lenskit</url>
+    </issueManagement>
+    <properties>
+        <copyrightHolder>Regents of the University of Minnesota</copyrightHolder>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lenskit.web.url>http://lenskit.grouplens.org</lenskit.web.url>
+        <lenskit.web.path>file:///web/research/lenskit.grouplens.org/</lenskit.web.path>
+        <mathjax.source>http://cdn.mathjax.org/mathjax/latest</mathjax.source>
+        <javadoc.cite.database>${basedir}/etc/references.rdf</javadoc.cite.database>
+        <groovy.version>1.8.7</groovy.version>
+        <gmaven.runtime>1.8</gmaven.runtime>
+        <grapht.version>0.4.1</grapht.version>
+        <grouplens.common.version>0.6.1</grouplens.common.version>
+        <lenskit.clean.removeAll>false</lenskit.clean.removeAll>
+    </properties>
+    <build>
+    <pluginManagement>
+    <plugins>
+    <!-- Configure the compiler -->
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+            <source>1.6</source>
+            <target>1.6</target>
+        </configuration>
+    </plugin>
+    <plugin>
+        <groupId>org.codehaus.gmaven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <version>1.4</version>
+    </plugin>
+    </plugins>
+    </pluginManagement>
+    </build>
+    <!-- force the Groovy version we want -->
+    <dependencies>
+        <dependency>
+            <groupId>org.codehaus.gmaven.runtime</groupId>
+            <artifactId>gmaven-runtime-${gmaven.runtime}</artifactId>
+            <version>1.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.groovy</groupId>
+                    <artifactId>groovy-all</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${groovy.version}</version>
+        </dependency>
+    <dependency>
+      <groupId>org.grouplens.lenskit</groupId>
+      <artifactId>lenskit-core</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <!-- to get the lenskit cursors -->
+      <groupId>org.grouplens.lenskit</groupId>
+      <artifactId>lenskit-core</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    </dependencies>
+
+
+
+</project>
