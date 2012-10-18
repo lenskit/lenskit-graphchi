@@ -6,7 +6,8 @@ import org.grouplens.lenskit.graphchi.util.MatrixEntry;
 import java.io.Closeable;
 
 public interface MatrixSource extends Cursor<MatrixEntry>{
-    public int getRowCount();
-    public int getColumnCount();
-    public int getEntryCount();
+    public int getMatrixRowCount();
+    public int getMatrixColumnCount();
+    public int getMatrixEntryCount();
+    public boolean isSorted();
 }
