@@ -1,11 +1,11 @@
 package org.grouplens.lenskit.graphchi.util;
 
 public class MatrixEntry implements Cloneable{
-    public long user;
-    public long item;
+    public int user;
+    public int item;
     public double rating;
 
-    public MatrixEntry set(long user, long item, double rating){
+    public MatrixEntry set(int user, int item, double rating){
         this.user = user;
         this.item = item;
         this.rating = rating;

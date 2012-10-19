@@ -4,6 +4,7 @@ import org.grouplens.lenskit.cursors.AbstractPollingCursor;
 import org.grouplens.lenskit.data.pref.IndexedPreference;
 import org.grouplens.lenskit.data.snapshot.PreferenceSnapshot;
 import org.grouplens.lenskit.graphchi.util.MatrixEntry;
+import org.grouplens.lenskit.util.Index;
 
 import java.util.Iterator;
 
@@ -16,6 +17,8 @@ public class PreferenceSnapshotMatrixSource extends AbstractPollingCursor<Matrix
     private MatrixEntry nextEntry;
     private PreferenceSnapshot snapshot;
     private Iterator<IndexedPreference> fastIterator;
+    private Index userIds;
+    private Index itemIds;
 
     public PreferenceSnapshotMatrixSource(PreferenceSnapshot snapshot, boolean isSorted){
         super(snapshot.getRatings().size());
@@ -24,8 +27,10 @@ public class PreferenceSnapshotMatrixSource extends AbstractPollingCursor<Matrix
         nextEntry = new MatrixEntry();
         rows = snapshot.userIndex().getObjectCount();
         columns = snapshot.itemIndex().getObjectCount();
-        entries  = snapshot.getRatings().size();
+        entries  = super.getRowCount();
         this.isSorted = isSorted;
+        userIds = snapshot.userIndex();
+        itemIds = snapshot.itemIndex();
     }
 
 
@@ -46,9 +51,16 @@ public class PreferenceSnapshotMatrixSource extends AbstractPollingCursor<Matrix
     public MatrixEntry poll(){
         if(fastIterator.hasNext()){
             IndexedPreference pref = fastIterator.next();
-            return nextEntry.set(pref.getUserId(), pref.getItemId(), pref.getValue());
+            return nextEntry.set(pref.getUserIndex(), pref.getItemIndex(), pref.getValue());
         }
         return null;
     }
 
+    long getUserId(int index){
+        return userIds.getId(index);
+    }
+
+    long getItemId(int index){
+        return itemIds.getId(index);
+    }
 }
