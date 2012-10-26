@@ -88,4 +88,24 @@ public class TestGraphChiSerializer {
         scanner.close();
     }
 
+    @Test
+    public void verifyContents() throws IOException{
+        String expectedContents = "%%MatrixMarket matrix coordinate real general\n" +
+                "3 3 9\n" +
+                "0 0 4.0\n" +
+                "0 1 3.0\n" +
+                "0 2 5.0\n" +
+                "1 0 4.0\n" +
+                "1 1 3.0\n" +
+                "1 2 5.0\n" +
+                "2 0 3.0\n" +
+                "2 1 3.0\n" +
+                "2 2 3.0\n";
+        StringBuilder fileContents = new StringBuilder();
+        for(String line; (line=outputTester.readLine())!=null;){
+            fileContents.append(line+"\n");
+        }
+        assertEquals(fileContents.toString(), expectedContents);
+    }
+
 }
