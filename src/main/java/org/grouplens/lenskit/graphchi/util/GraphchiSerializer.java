@@ -28,9 +28,9 @@ public class GraphchiSerializer {
      */
     public static void serializeMatrixSource(MatrixSource source, String filename) throws IOException {
         BufferedWriter io = new BufferedWriter(new FileWriter(filename));
-        io.write("%%MatrixSourceMarket matrixmarket coordinate real general");
+        io.write("%%MatrixMarket matrix coordinate real general");
         io.newLine();
-        io.write(source.getRowCount()+" "+source.getMatrixColumnCount()+" "+source.getMatrixEntryCount());
+        io.write(source.getMatrixRowCount()+" "+source.getMatrixColumnCount()+" "+source.getMatrixEntryCount());
         io.newLine();
 
         if(source.isSorted()){
@@ -52,8 +52,8 @@ public class GraphchiSerializer {
     }
 
     private static void writeUnsorted(MatrixSource source, BufferedWriter io) throws IOException{
-        long[] users = new long[source.getMatrixRowCount()];
-        long[] items = new long[source.getMatrixColumnCount()];
+        long[] users = new long[source.getMatrixEntryCount()];
+        long[] items = new long[source.getMatrixEntryCount()];
         double[] ratings = new double[source.getMatrixEntryCount()];
         int index = 0;
         for(MatrixEntry entry : source.fast()){
