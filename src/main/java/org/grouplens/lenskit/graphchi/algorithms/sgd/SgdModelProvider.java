@@ -10,7 +10,7 @@ import javax.inject.Provider;
 import java.io.File;
 import java.io.IOException;
 
-public class SgdModelProvider implements Provider<SgdResult> {
+public class SgdModelProvider implements Provider<SgdModel> {
     private MatrixSource trainMatrix;
     private MatrixSource testMatrix;
 
@@ -35,7 +35,7 @@ public class SgdModelProvider implements Provider<SgdResult> {
     }
 
 
-    public SgdResult get() {
+    public SgdModel get() {
         try{
             serializeData();
         }
