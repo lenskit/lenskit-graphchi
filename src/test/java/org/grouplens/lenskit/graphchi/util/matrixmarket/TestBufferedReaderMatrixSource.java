@@ -26,7 +26,7 @@ public class TestBufferedReaderMatrixSource {
     @BeforeClass
     public static void createFile() throws IOException {
         BufferedWriter writerMetaData = new BufferedWriter(new FileWriter(filename1));
-        writerMetaData.write("%%MatrixMarket matrix array real general\n"+
+        writerMetaData.write("%%MatrixMarket Matrix array real general\n"+
                 "3 4\n"+
                 "0.8147\n"+
                 "0.9058\n"+

@@ -75,7 +75,7 @@ public class TestGraphChiSerializer {
 
     @Test
     public void verifyTag() throws IOException{
-        assertEquals(outputTester.readLine(), "%%MatrixMarket matrix coordinate real general");
+        assertEquals(outputTester.readLine(), "%%MatrixMarket Matrix coordinate real general");
     }
 
     @Test
@@ -90,7 +90,7 @@ public class TestGraphChiSerializer {
 
     @Test
     public void verifyContents() throws IOException{
-        String expectedContents = "%%MatrixMarket matrix coordinate real general\n" +
+        String expectedContents = "%%MatrixMarket Matrix coordinate real general\n" +
                 "3 3 9\n" +
                 "0 0 4.0\n" +
                 "0 1 3.0\n" +

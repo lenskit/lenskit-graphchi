@@ -72,7 +72,7 @@ public class BufferedReaderMatrixSource extends AbstractPollingCursor<MatrixEntr
     }
 
     /**
-     * @return the next line of our matrix wrapped in a MatrixEntry or null if we have reached the end of the file.
+     * @return the next line of our Matrix wrapped in a MatrixEntry or null if we have reached the end of the file.
      */
     public MatrixEntry poll(){
         return parseLine()? entry : null;

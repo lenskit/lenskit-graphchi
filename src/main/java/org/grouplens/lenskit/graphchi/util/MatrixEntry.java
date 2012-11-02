@@ -17,6 +17,6 @@ public class MatrixEntry implements Cloneable{
     }
 
     public String toString(){
-        return user+" "+item +" "+rating;
+        return user +" "+item +" "+rating;
     }
 }
