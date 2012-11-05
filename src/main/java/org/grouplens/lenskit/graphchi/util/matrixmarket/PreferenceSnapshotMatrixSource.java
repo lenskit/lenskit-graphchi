@@ -8,7 +8,7 @@ import org.grouplens.lenskit.util.Index;
 
 import java.util.Iterator;
 
-public class PreferenceSnapshotMatrixSource extends AbstractPollingCursor<MatrixEntry> implements MatrixSource{
+public class PreferenceSnapshotMatrixSource extends AbstractPollingCursor<MatrixEntry> implements UserItemMatrixSource{
 
     private int rows;
     private int columns;
@@ -56,11 +56,11 @@ public class PreferenceSnapshotMatrixSource extends AbstractPollingCursor<Matrix
         return null;
     }
 
-    long getUserId(int index){
-        return userIds.getId(index);
+    public Index getUserIndexes(){
+        return userIds;
     }
 
-    long getItemId(int index){
-        return itemIds.getId(index);
+    public Index getItemIndexes(){
+        return itemIds;
     }
 }

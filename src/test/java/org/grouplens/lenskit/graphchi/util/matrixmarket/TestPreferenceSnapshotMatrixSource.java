@@ -93,21 +93,4 @@ public class TestPreferenceSnapshotMatrixSource {
         }
     }
 
-    @Test
-    public void testUserIds(){
-        LongCollection userIds = new LongArrayList();
-        for(MatrixEntry i : source.fast()){
-            userIds.add(source.getUserId(i.user));
-        }
-        assertTrue(snapshot.getUserIds().containsAll(userIds));
-    }
-
-    @Test
-    public void testItemIds(){
-        LongCollection itemIds = new LongArrayList();
-        for(MatrixEntry i : source.fast()){
-            itemIds.add(source.getItemId(i.item));
-        }
-        assertTrue(snapshot.getItemIds().containsAll(itemIds));
-    }
 }

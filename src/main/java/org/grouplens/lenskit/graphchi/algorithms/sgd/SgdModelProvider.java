@@ -5,33 +5,34 @@ import org.grouplens.lenskit.graphchi.util.MatrixEntry;
 import org.grouplens.lenskit.graphchi.util.matrices.DenseMatrix;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.BufferedReaderMatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.MatrixSource;
+import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
+
 import javax.inject.Provider;
 
 import java.io.File;
 import java.io.IOException;
 
 public class SgdModelProvider implements Provider<SgdModel> {
-    private MatrixSource trainMatrix;
-    private MatrixSource testMatrix;
+    private UserItemMatrixSource trainMatrix;
 
     private static int globalId = 0;
 
     private int id;
 
     private String directory;
+    private int featureCount;
 
-    public SgdModelProvider(MatrixSource train, MatrixSource test){
-        trainMatrix = train;
-        testMatrix = test;
+    public SgdModelProvider(UserItemMatrixSource source, boolean isSorted, int featureCount){
+        trainMatrix = source;
+        this.featureCount = featureCount;
         id = ++globalId;
         directory = "sgd"+id;
     }
 
-    public void serializeData() throws IOException{
+    private void serializeData() throws IOException{
         if(!(new File("sgd"+id).mkdir()))
             throw new IOException("Couldn't make new directory sgd"+id);
         GraphchiSerializer.serializeMatrixSource(trainMatrix, directory+"/train");
-        GraphchiSerializer.serializeMatrixSource(testMatrix, directory+"/test");
     }
 
 
@@ -70,6 +71,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
         for(MatrixEntry entry : v){
             vMatrix[entry.user][entry.item] = entry.rating;
         }
-        return new SgdModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix));
+
+        return new SgdModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix), trainMatrix);
     }
 }
