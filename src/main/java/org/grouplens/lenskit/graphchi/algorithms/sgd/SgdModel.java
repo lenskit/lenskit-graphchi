@@ -2,7 +2,7 @@ package org.grouplens.lenskit.graphchi.algorithms.sgd;
 import org.grouplens.lenskit.graphchi.util.matrices.Matrix;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
 
-public class SgdModel {
+public class SgdModel{
     public Matrix u;
     public Matrix v;
     public UserItemMatrixSource source;

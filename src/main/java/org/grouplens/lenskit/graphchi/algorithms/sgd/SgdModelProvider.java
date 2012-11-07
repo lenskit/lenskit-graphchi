@@ -64,11 +64,13 @@ public class SgdModelProvider implements Provider<SgdModel> {
 
         //Populate the U matrix
         for(MatrixEntry entry : u){
+            //User Feature -> Preference
             uMatrix[entry.user][entry.item] = entry.rating;
         }
 
         //Populate the V matrix
         for(MatrixEntry entry : v){
+            //Item Feature -> Preference
             vMatrix[entry.user][entry.item] = entry.rating;
         }
 
