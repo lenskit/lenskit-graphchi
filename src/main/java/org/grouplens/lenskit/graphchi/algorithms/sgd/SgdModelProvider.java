@@ -6,6 +6,7 @@ import org.grouplens.lenskit.graphchi.util.matrices.DenseMatrix;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.BufferedReaderMatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.MatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
+import org.grouplens.lenskit.transform.clamp.ClampingFunction;
 
 import javax.inject.Provider;
 
@@ -18,20 +19,25 @@ public class SgdModelProvider implements Provider<SgdModel> {
     private static int globalId = 0;
 
     private int id;
-
     private String directory;
     private int featureCount;
+    private ClampingFunction clamp;
+    private String graphchi;
 
-    public SgdModelProvider(UserItemMatrixSource source, boolean isSorted, int featureCount){
+    public SgdModelProvider(UserItemMatrixSource source, int featureCount, ClampingFunction clamp,
+                            String graphchi){
         trainMatrix = source;
-        this.featureCount = featureCount;
         id = ++globalId;
         directory = "sgd"+id;
+        this.featureCount = 20; // Magic number because GraphChi currently doesn't allow runtime configuration of
+                                // feature counts.
+        this.clamp = clamp;
+        this.graphchi = graphchi;
     }
 
     private void serializeData() throws IOException{
-        if(!(new File("sgd"+id).mkdir()))
-            throw new IOException("Couldn't make new directory sgd"+id);
+        if(!(new File(directory).mkdir()))
+            throw new IOException("Couldn't make new directory "+directory);
         GraphchiSerializer.serializeMatrixSource(trainMatrix, directory+"/train");
     }
 
@@ -44,7 +50,19 @@ public class SgdModelProvider implements Provider<SgdModel> {
             throw new RuntimeException(e);
         }
 
-        //Todo Compute graphchi result, block until complete
+        ProcessBuilder builder = new ProcessBuilder();
+        builder.directory(new File(directory));
+        builder.command(graphchi+"sgd " +
+                "--training=train --validation=train " +
+                "--sgd_lambda=1e-4 --sgd_gamma=1e-4 " +
+                "--minval=1 --maxval=5 --max_iter=6 --quiet=1");
+        try{
+            builder.start();
+        }
+        catch(IOException e){
+            throw new RuntimeException(e);
+        }
+
         String fileroot = directory+"/train";
 
         //Get the results
@@ -74,6 +92,6 @@ public class SgdModelProvider implements Provider<SgdModel> {
             vMatrix[entry.user][entry.item] = entry.rating;
         }
 
-        return new SgdModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix), trainMatrix);
+        return new SgdModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix), trainMatrix, featureCount, clamp);
     }
 }
