@@ -21,10 +21,10 @@ public class SgdModelProvider implements Provider<SgdModel> {
     private int id;
     private String directory;
     private int featureCount;
-    private ClampingFunction clamp;
+    private BoundedClampingFunction clamp;
     private String graphchi;
 
-    public SgdModelProvider(UserItemMatrixSource source, int featureCount, ClampingFunction clamp,
+    public SgdModelProvider(UserItemMatrixSource source, int featureCount, BoundedClampingFunction clamp,
                             String graphchi){
         trainMatrix = source;
         id = ++globalId;
@@ -55,7 +55,9 @@ public class SgdModelProvider implements Provider<SgdModel> {
         builder.command(graphchi+"sgd " +
                 "--training=train --validation=train " +
                 "--sgd_lambda=1e-4 --sgd_gamma=1e-4 " +
-                "--minval=1 --maxval=5 --max_iter=6 --quiet=1");
+                "--minval="+clamp.lowerBound()+
+                "--maxval="+clamp.upperBound()+
+                "--max_iter=6 --quiet=1");
         try{
             builder.start();
         }
