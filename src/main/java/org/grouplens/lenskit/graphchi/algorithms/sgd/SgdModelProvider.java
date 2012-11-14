@@ -1,13 +1,14 @@
 package org.grouplens.lenskit.graphchi.algorithms.sgd;
 
 import org.grouplens.lenskit.graphchi.util.GraphchiSerializer;
+
 import org.grouplens.lenskit.graphchi.util.MatrixEntry;
 import org.grouplens.lenskit.graphchi.util.matrices.DenseMatrix;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.BufferedReaderMatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.MatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
-import org.grouplens.lenskit.transform.clamp.ClampingFunction;
-
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
 import javax.inject.Provider;
 
 import java.io.File;
@@ -18,16 +19,16 @@ public class SgdModelProvider implements Provider<SgdModel> {
 
     private static int globalId = 0;
 
-    private int id;
     private String directory;
     private int featureCount;
     private BoundedClampingFunction clamp;
     private String graphchi;
 
-    public SgdModelProvider(UserItemMatrixSource source, int featureCount, BoundedClampingFunction clamp,
-                            String graphchi){
+    @Inject
+    public SgdModelProvider( @Nonnull UserItemMatrixSource source,int featureCount, @Nonnull BoundedClampingFunction clamp,
+                            @Nonnull String graphchi){
         trainMatrix = source;
-        id = ++globalId;
+        int id = ++globalId;
         directory = "sgd"+id;
         this.featureCount = 20; // Magic number because GraphChi currently doesn't allow runtime configuration of
                                 // feature counts.
