@@ -9,6 +9,8 @@ import org.grouplens.lenskit.util.Index;
 import org.grouplens.lenskit.vectors.MutableSparseVector;
 import org.grouplens.lenskit.vectors.SparseVector;
 
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
 import java.util.Collection;
 
 public class SgdRatingPredictor implements RatingPredictor{
@@ -20,6 +22,7 @@ public class SgdRatingPredictor implements RatingPredictor{
     private int featureCount;
     private ClampingFunction clamp;
 
+    @Inject
     public SgdRatingPredictor(SgdModel model){
         users = model.u;
         items = model.v;
@@ -44,7 +47,8 @@ public class SgdRatingPredictor implements RatingPredictor{
     }
 
 
-    public SparseVector score(long user,  Collection<Long> items){
+    @Nonnull
+    public SparseVector score(long user,  @Nonnull Collection<Long> items){
         MutableSparseVector vector = new MutableSparseVector(items);
         for(long i : vector.keySet()){
             vector.set(i, score(user, i));
@@ -52,7 +56,7 @@ public class SgdRatingPredictor implements RatingPredictor{
         return vector.freeze();
     }
 
-    public void score(long user,  MutableSparseVector scores){
+    public void score(long user,  @Nonnull MutableSparseVector scores){
         for(long i : scores.keySet()){
             scores.set(i, score(user, i));
         }
@@ -62,15 +66,16 @@ public class SgdRatingPredictor implements RatingPredictor{
         return false;
     }
 
-    public double score( UserHistory<? extends Event> profile, long item){
+    public double score( @Nonnull UserHistory<? extends Event> profile, long item){
          return score(profile.getUserId(), item);
     }
 
-    public SparseVector score( UserHistory<? extends Event> profile,  Collection<Long> items){
+    @Nonnull
+    public SparseVector score( @Nonnull UserHistory<? extends Event> profile,  @Nonnull Collection<Long> items){
         return score(profile.getUserId(), items);
     }
 
-    public void score( UserHistory<? extends Event> profile,  MutableSparseVector scores){
+    public void score( @Nonnull UserHistory<? extends Event> profile,  @Nonnull MutableSparseVector scores){
         score(profile.getUserId(), scores);
     }
 }
