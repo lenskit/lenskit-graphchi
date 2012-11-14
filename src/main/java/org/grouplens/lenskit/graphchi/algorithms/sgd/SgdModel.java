@@ -1,9 +1,15 @@
 package org.grouplens.lenskit.graphchi.algorithms.sgd;
+import org.grouplens.grapht.annotation.DefaultProvider;
+import org.grouplens.lenskit.core.Shareable;
 import org.grouplens.lenskit.graphchi.util.matrices.Matrix;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
 import org.grouplens.lenskit.transform.clamp.ClampingFunction;
 
-public class SgdModel{
+import java.io.Serializable;
+
+@DefaultProvider(SgdModelProvider.class)
+@Shareable
+public class SgdModel implements Serializable {
     public Matrix u;
     public Matrix v;
     public UserItemMatrixSource source;
