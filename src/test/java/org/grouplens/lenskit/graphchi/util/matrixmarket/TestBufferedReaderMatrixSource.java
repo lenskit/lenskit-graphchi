@@ -121,8 +121,8 @@ public class TestBufferedReaderMatrixSource {
         for(int i = 1; i<=columns; ++i)
             for(int j = 1; j<=rows; ++j){
                 entry = metaDataSource.next();
-                assertEquals(i, entry.item);
-                assertEquals(j, entry.user);
+                assertEquals(i, entry.item+1);
+                assertEquals(j, entry.user+1);
             }
     }
 

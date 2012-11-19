@@ -56,7 +56,7 @@ public class TestSgdRecommenderBuild {
     public void testSgdEngineCreate(){
         Recommender r = engine.open();
         try{
-            assertThat(r.getRatingPredictor(), instanceOf(SgdRecommender.class));
+            assertThat(r.getItemRecommender(), instanceOf(SgdRecommender.class));
             assertThat(r.getRatingPredictor(), instanceOf(SgdRatingPredictor.class));
         }
         finally{

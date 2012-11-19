@@ -117,7 +117,7 @@ public class BufferedReaderMatrixSource extends AbstractPollingCursor<MatrixEntr
             c = currentColumn;
         }
 
-        entry.set(r, c, rating);
+        entry.set(r-1, c-1, rating);
         return true;
     }
 

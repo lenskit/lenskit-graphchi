@@ -94,6 +94,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
         double[][] uMatrix = new double[u.getMatrixRowCount()][u.getMatrixColumnCount()];
         double[][] vMatrix = new double [v.getMatrixRowCount()][v.getMatrixColumnCount()];
 
+
         //Populate the U matrix
         for(MatrixEntry entry : u){
             //User Feature -> Preference

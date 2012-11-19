@@ -75,7 +75,7 @@ public class PreferenceSnapshotMatrixSource extends AbstractPollingCursor<Matrix
     public MatrixEntry poll(){
         if(fastIterator.hasNext()){
             IndexedPreference pref = fastIterator.next();
-            return nextEntry.set(pref.getUserIndex(), pref.getItemIndex(), pref.getValue());
+            return nextEntry.set(pref.getUserIndex()+1, pref.getItemIndex()+1, pref.getValue());
         }
         return null;
     }
