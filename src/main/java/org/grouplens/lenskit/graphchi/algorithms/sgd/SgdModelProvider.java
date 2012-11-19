@@ -16,6 +16,7 @@ import javax.inject.Provider;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class SgdModelProvider implements Provider<SgdModel> {
     private UserItemMatrixSource trainMatrix;
@@ -28,7 +29,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
     private String graphchi;
 
     @Inject
-    public SgdModelProvider( @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount, @Nullable BoundedClampingFunction clamp,
+    public SgdModelProvider( @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount, @Nonnull BoundedClampingFunction clamp,
                             @GraphchiLocation @Nonnull String graphchi){
         trainMatrix = source;
         int id = ++globalId;
@@ -40,7 +41,8 @@ public class SgdModelProvider implements Provider<SgdModel> {
     }
 
     private void serializeData() throws IOException{
-        if(!(new File(directory).mkdir()))
+        File dir = new File(directory);
+        if(!(dir.mkdir()) &&  !dir.exists())
             throw new IOException("Couldn't make new directory "+directory);
         GraphchiSerializer.serializeMatrixSource(trainMatrix, directory+"/train");
     }
@@ -55,22 +57,28 @@ public class SgdModelProvider implements Provider<SgdModel> {
         }
 
         ProcessBuilder builder = new ProcessBuilder();
-        builder.directory(new File(directory));
-        builder.command(graphchi+"sgd " +
-                "--training=train --validation=train " +
-                "--sgd_lambda=1e-4 --sgd_gamma=1e-4 " +
-                "--minval="+clamp.lowerBound()+
-                "--maxval="+clamp.upperBound()+
-                "--max_iter=6 --quiet=1");
-        try{
-            builder.start();
+        String currPath = new File(directory).getAbsolutePath()+"/";
+        builder.directory(new File(graphchi));
+        builder.command("./toolkits/collaborative_filtering/sgd" ,
+                "--training="+ currPath+"train",
+                "--sgd_lambda=1e-4",
+                "--sgd_gamma=1e-4" ,
+                "--minval="+clamp.lowerBound,
+                " --maxval="+clamp.upperBound,
+                " --max_iter=6",
+                "--quiet=1");
+        try {
+            Process sgd = builder.start();
+            sgd.waitFor();
+            InputStream error = sgd.getErrorStream();
         }
         catch(IOException e){
             throw new RuntimeException(e);
         }
-
-        String fileroot = directory+"/train";
-
+        catch(InterruptedException e){
+            throw new RuntimeException(e);
+        }
+        String fileroot = currPath+"/train";
         //Get the results
         MatrixSource u;
         MatrixSource v;
