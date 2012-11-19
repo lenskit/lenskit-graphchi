@@ -54,8 +54,8 @@ public class TestGraphChiSerializer {
         rows = 3;
         columns = 3;
         entries = 9;
-
-        GraphchiSerializer.serializeMatrixSource( new PreferenceSnapshotMatrixSource(prefSnapshot, false),filename);
+        PreferenceSnapshotMatrixSource source = new PreferenceSnapshotMatrixSource.Provider(manager.create(), false).get();
+        GraphchiSerializer.serializeMatrixSource(source,filename);
     }
 
     @AfterClass

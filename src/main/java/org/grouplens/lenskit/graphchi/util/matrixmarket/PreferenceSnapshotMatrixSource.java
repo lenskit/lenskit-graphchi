@@ -1,28 +1,52 @@
 package org.grouplens.lenskit.graphchi.util.matrixmarket;
 
+import org.grouplens.grapht.annotation.DefaultProvider;
 import org.grouplens.lenskit.cursors.AbstractPollingCursor;
+import org.grouplens.lenskit.data.dao.DataAccessObject;
 import org.grouplens.lenskit.data.pref.IndexedPreference;
 import org.grouplens.lenskit.data.snapshot.PreferenceSnapshot;
+import org.grouplens.lenskit.data.snapshot.PackedPreferenceSnapshot;
 import org.grouplens.lenskit.graphchi.util.MatrixEntry;
 import org.grouplens.lenskit.util.Index;
 
+import javax.inject.Inject;
 import java.util.Iterator;
 
+@DefaultProvider(PreferenceSnapshotMatrixSource.Provider.class)
 public class PreferenceSnapshotMatrixSource extends AbstractPollingCursor<MatrixEntry> implements UserItemMatrixSource{
+
+    public static class Provider implements javax.inject.Provider<PreferenceSnapshotMatrixSource>{
+
+        private PreferenceSnapshot snapshot;
+        private boolean sorted = false;
+
+        @Inject
+        public Provider(DataAccessObject dao){
+            snapshot = new PackedPreferenceSnapshot.Provider(dao).get();
+        }
+
+        public Provider(DataAccessObject dao, boolean sorted){
+            this(dao);
+            this.sorted = sorted;
+        }
+
+        @Override
+        public PreferenceSnapshotMatrixSource get(){
+            return new PreferenceSnapshotMatrixSource(snapshot, sorted);
+        }
+    }
 
     private int rows;
     private int columns;
     private int entries;
     private boolean isSorted;
     private MatrixEntry nextEntry;
-    private PreferenceSnapshot snapshot;
     private Iterator<IndexedPreference> fastIterator;
     private Index userIds;
     private Index itemIds;
 
-    public PreferenceSnapshotMatrixSource(PreferenceSnapshot snapshot, boolean isSorted){
+     protected PreferenceSnapshotMatrixSource(PreferenceSnapshot snapshot, boolean isSorted){
         super(snapshot.getRatings().size());
-        this.snapshot = snapshot;
         fastIterator = snapshot.getRatings().fastIterator();
         nextEntry = new MatrixEntry();
         rows = snapshot.userIndex().getObjectCount();

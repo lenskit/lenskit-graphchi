@@ -1,5 +1,7 @@
 package org.grouplens.lenskit.graphchi.algorithms.sgd;
 
+import org.grouplens.lenskit.graphchi.algorithms.sgd.param.FeatureCount;
+import org.grouplens.lenskit.graphchi.algorithms.sgd.param.GraphchiLocation;
 import org.grouplens.lenskit.graphchi.util.GraphchiSerializer;
 
 import org.grouplens.lenskit.graphchi.util.MatrixEntry;
@@ -8,6 +10,7 @@ import org.grouplens.lenskit.graphchi.util.matrixmarket.BufferedReaderMatrixSour
 import org.grouplens.lenskit.graphchi.util.matrixmarket.MatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
@@ -25,8 +28,8 @@ public class SgdModelProvider implements Provider<SgdModel> {
     private String graphchi;
 
     @Inject
-    public SgdModelProvider( @Nonnull UserItemMatrixSource source,int featureCount, @Nonnull BoundedClampingFunction clamp,
-                            @Nonnull String graphchi){
+    public SgdModelProvider( @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount, @Nullable BoundedClampingFunction clamp,
+                            @GraphchiLocation @Nonnull String graphchi){
         trainMatrix = source;
         int id = ++globalId;
         directory = "sgd"+id;
