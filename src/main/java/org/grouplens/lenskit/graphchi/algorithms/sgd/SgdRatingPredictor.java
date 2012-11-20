@@ -26,8 +26,8 @@ public class SgdRatingPredictor implements RatingPredictor{
     public SgdRatingPredictor(SgdModel model){
         users = model.u;
         items = model.v;
-        userIds = model.source.getUserIndexes();
-        itemIds = model.source.getItemIndexes();
+        userIds = model.userIndex;
+        itemIds = model.itemIndex;
         featureCount = model.featureCount;
         clamp = model.clamp;
     }

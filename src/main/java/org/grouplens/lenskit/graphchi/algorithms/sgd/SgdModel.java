@@ -4,6 +4,7 @@ import org.grouplens.lenskit.core.Shareable;
 import org.grouplens.lenskit.graphchi.util.matrices.Matrix;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
 import org.grouplens.lenskit.transform.clamp.ClampingFunction;
+import org.grouplens.lenskit.util.Index;
 
 import java.io.Serializable;
 
@@ -12,14 +13,16 @@ import java.io.Serializable;
 public class SgdModel implements Serializable {
     public Matrix u;
     public Matrix v;
-    public UserItemMatrixSource source;
     public int featureCount;
+    public Index userIndex;
+    public Index itemIndex;
     public ClampingFunction clamp;
 
-    public SgdModel(Matrix u, Matrix v, UserItemMatrixSource source, int featureCount, ClampingFunction clamp){
+    public SgdModel(Matrix u, Matrix v, Index uids, Index iids, int featureCount, ClampingFunction clamp){
+        userIndex = uids;
+        itemIndex = iids;
         this.u = u;
         this.v = v;
-        this.source = source;
         this.featureCount = featureCount;
         this.clamp = clamp;
     }

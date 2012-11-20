@@ -1,5 +1,7 @@
 package org.grouplens.lenskit.graphchi.algorithms.sgd;
 
+import org.codehaus.plexus.util.FileUtils;
+import org.grouplens.lenskit.core.Transient;
 import org.grouplens.lenskit.graphchi.algorithms.sgd.param.FeatureCount;
 import org.grouplens.lenskit.graphchi.algorithms.sgd.param.GraphchiLocation;
 import org.grouplens.lenskit.graphchi.util.GraphchiSerializer;
@@ -29,7 +31,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
     private String graphchi;
 
     @Inject
-    public SgdModelProvider( @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount, @Nonnull BoundedClampingFunction clamp,
+    public SgdModelProvider( @Transient @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount, @Transient @Nonnull BoundedClampingFunction clamp,
                             @GraphchiLocation @Nonnull String graphchi){
         trainMatrix = source;
         int id = ++globalId;
@@ -106,7 +108,13 @@ public class SgdModelProvider implements Provider<SgdModel> {
             //Item Feature -> Preference
             vMatrix[entry.user][entry.item] = entry.rating;
         }
-
-        return new SgdModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix), trainMatrix, featureCount, clamp);
+        try{
+            FileUtils.deleteDirectory(new File(directory));
+        }
+        catch(IOException e){
+            throw new RuntimeException(e);
+        }
+        return new SgdModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix),
+                trainMatrix.getUserIndexes(), trainMatrix.getUserIndexes(), featureCount, clamp);
     }
 }

@@ -4,22 +4,20 @@ import org.grouplens.lenskit.ItemRecommender;
 import org.grouplens.lenskit.RatingPredictor;
 import org.grouplens.lenskit.Recommender;
 import org.grouplens.lenskit.RecommenderBuildException;
-import org.grouplens.lenskit.baseline.BaselinePredictor;
-import org.grouplens.lenskit.baseline.UserMeanPredictor;
+import org.grouplens.lenskit.core.LenskitRecommender;
 import org.grouplens.lenskit.core.LenskitRecommenderEngine;
 import org.grouplens.lenskit.core.LenskitRecommenderEngineFactory;
 import org.grouplens.lenskit.data.dao.DAOFactory;
 import org.grouplens.lenskit.data.dao.EventCollectionDAO;
 import org.grouplens.lenskit.data.event.Rating;
 import org.grouplens.lenskit.data.event.Ratings;
-import org.grouplens.lenskit.graphchi.algorithms.sgd.BoundedClampingFunction;
+import org.grouplens.lenskit.graphchi.algorithms.sgd.SgdModel;
 import org.grouplens.lenskit.graphchi.algorithms.sgd.SgdRatingPredictor;
 import org.grouplens.lenskit.graphchi.algorithms.sgd.SgdRecommender;
 import org.grouplens.lenskit.graphchi.algorithms.sgd.param.FeatureCount;
 import org.grouplens.lenskit.graphchi.algorithms.sgd.param.GraphchiLocation;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.PreferenceSnapshotMatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
-import org.grouplens.lenskit.params.IterationCount;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -61,6 +59,29 @@ public class TestSgdRecommenderBuild {
         }
         finally{
             r.close();
+        }
+    }
+
+    @Test
+    public void testConfigSeparation() {
+        LenskitRecommender rec1 = null;
+        LenskitRecommender rec2 = null;
+        try {
+            rec1 = engine.open();
+            rec2 = engine.open();
+
+            assertThat(rec1.getItemScorer(),
+                    not(sameInstance(rec2.getItemScorer())));
+            assertThat(rec1.get(SgdModel.class),
+                    allOf(not(nullValue()),
+                            sameInstance(rec2.get(SgdModel.class))));
+        } finally {
+            if (rec2 != null) {
+                rec2.close();
+            }
+            if (rec1 != null) {
+                rec1.close();
+            }
         }
     }
 }
