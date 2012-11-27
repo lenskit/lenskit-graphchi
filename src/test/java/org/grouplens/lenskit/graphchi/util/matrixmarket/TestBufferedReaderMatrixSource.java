@@ -70,9 +70,11 @@ public class TestBufferedReaderMatrixSource {
         metaDataSource = BufferedReaderMatrixSource.getDenseMatrixSource(filename1, true, false);
         noDataSource = BufferedReaderMatrixSource.getDenseMatrixSource(filename2, false, false);
 
-        rows = 4;
-        columns = 3;
+        rows = 3;
+        columns = 4;
         entries = 12;
+
+
 
         data = new ArrayList<Double>();
         data.add(.8147);
@@ -106,10 +108,8 @@ public class TestBufferedReaderMatrixSource {
 
     @Test
     public void testContents(){
-        Iterator<Double> dataIterator = data.iterator();
 
-        while(dataIterator.hasNext()){
-            double value = dataIterator.next();
+        for (double value : data) {
             assertEquals(value, metaDataSource.next().rating, EPSILON);
             assertEquals(value, noDataSource.next().rating, EPSILON);
         }
@@ -118,11 +118,11 @@ public class TestBufferedReaderMatrixSource {
     @Test
     public void testPositions(){
         MatrixEntry entry;
-        for(int i = 1; i<=columns; ++i)
-            for(int j = 1; j<=rows; ++j){
+        for(int i = 0; i<columns; ++i)
+            for(int j = 0; j<rows; ++j){
                 entry = metaDataSource.next();
-                assertEquals(i, entry.item+1);
-                assertEquals(j, entry.user+1);
+                assertEquals(j, entry.user);
+                assertEquals(i, entry.item);
             }
     }
 

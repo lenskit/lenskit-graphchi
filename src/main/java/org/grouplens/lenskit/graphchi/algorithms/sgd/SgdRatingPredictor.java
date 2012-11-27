@@ -3,6 +3,7 @@ package org.grouplens.lenskit.graphchi.algorithms.sgd;
 import org.grouplens.lenskit.RatingPredictor;
 import org.grouplens.lenskit.data.Event;
 import org.grouplens.lenskit.data.UserHistory;
+import org.grouplens.lenskit.graphchi.util.matrices.DenseMatrix;
 import org.grouplens.lenskit.graphchi.util.matrices.Matrix;
 import org.grouplens.lenskit.transform.clamp.ClampingFunction;
 import org.grouplens.lenskit.util.Index;
@@ -36,8 +37,12 @@ public class SgdRatingPredictor implements RatingPredictor{
     public double score(long user, long item){
         int uid = userIds.getIndex(user);
         int iid = itemIds.getIndex(item);
-
         double score = 0.0;
+
+        DenseMatrix d = (DenseMatrix) users;
+        d.print();
+        d = (DenseMatrix) items;
+        d.print();
 
         for(int i = 0; i < featureCount; ++i){
             score += users.get(uid, i) * items.get(iid, i);

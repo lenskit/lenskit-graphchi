@@ -16,10 +16,10 @@ public class BufferedReaderMatrixSource extends AbstractPollingCursor<MatrixEntr
     private MatrixEntry entry;
     private static Pattern whiteSpacePattern = Pattern.compile("\\s+");
 
-    private int currentRow = 0;
-    private int currentColumn = 1;
+    private int currentRow =    -1;
+    private int currentColumn =  0;
 
-    private BufferedReaderMatrixSource(BufferedReader inputSource, int columns, int rows, int entries, boolean isSorted){
+    private BufferedReaderMatrixSource(BufferedReader inputSource, int rows, int columns, int entries, boolean isSorted){
         super(entries);
         this.columns = columns;
         this.rows = rows;
@@ -100,24 +100,13 @@ public class BufferedReaderMatrixSource extends AbstractPollingCursor<MatrixEntr
             return false;
 
         double rating = Double.parseDouble(nextLine);
-        int c = 0;
-        int r = 0;
-        if(rows == -1 || columns == -1){
-            r = -1;
-            c = -1;
-        }
-
+        ++currentRow;
         if(currentRow == rows){
-            r = 1;
-            currentRow = 1;
-            c = ++currentColumn;
-        }
-        else{
-            r = ++currentRow;
-            c = currentColumn;
+            ++currentColumn;
+            currentRow = 0;
         }
 
-        entry.set(r-1, c-1, rating);
+        entry.set(currentRow, currentColumn, rating);
         return true;
     }
 

@@ -76,7 +76,7 @@ public class GraphchiSerializer {
         long[] items;
         double[] ratings;
 
-        public Swapper(long[] users, long[] items, double[] ratings){
+     public Swapper(long[] users, long[] items, double[] ratings){
             this.users = users;
             this.items = items;
             this.ratings = ratings;

@@ -94,8 +94,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
 
         //These will be used to generate the DenseMatrix objects for the model
         double[][] uMatrix = new double[u.getMatrixRowCount()][u.getMatrixColumnCount()];
-        double[][] vMatrix = new double [v.getMatrixRowCount()][v.getMatrixColumnCount()];
-
+        double[][] vMatrix = new double[v.getMatrixRowCount()][v.getMatrixColumnCount()];
 
         //Populate the U matrix
         for(MatrixEntry entry : u){
@@ -110,11 +109,12 @@ public class SgdModelProvider implements Provider<SgdModel> {
         }
         try{
             FileUtils.deleteDirectory(new File(directory));
+
         }
         catch(IOException e){
             throw new RuntimeException(e);
         }
         return new SgdModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix),
-                trainMatrix.getUserIndexes(), trainMatrix.getUserIndexes(), featureCount, clamp);
+                trainMatrix.getUserIndexes(), trainMatrix.getItemIndexes(), featureCount, clamp);
     }
 }
