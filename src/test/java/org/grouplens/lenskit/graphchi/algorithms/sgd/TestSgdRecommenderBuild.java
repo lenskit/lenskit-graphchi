@@ -1,4 +1,4 @@
-package org.grouplens.lenskit.graphchi.util.algorithms;
+package org.grouplens.lenskit.graphchi.algorithms.sgd;
 
 import org.grouplens.lenskit.ItemRecommender;
 import org.grouplens.lenskit.RatingPredictor;
@@ -11,9 +11,6 @@ import org.grouplens.lenskit.data.dao.DAOFactory;
 import org.grouplens.lenskit.data.dao.EventCollectionDAO;
 import org.grouplens.lenskit.data.event.Rating;
 import org.grouplens.lenskit.data.event.Ratings;
-import org.grouplens.lenskit.graphchi.algorithms.sgd.SgdModel;
-import org.grouplens.lenskit.graphchi.algorithms.sgd.SgdRatingPredictor;
-import org.grouplens.lenskit.graphchi.algorithms.sgd.SgdRecommender;
 import org.grouplens.lenskit.graphchi.algorithms.sgd.param.FeatureCount;
 import org.grouplens.lenskit.graphchi.algorithms.sgd.param.GraphchiLocation;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.PreferenceSnapshotMatrixSource;
