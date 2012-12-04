@@ -63,8 +63,8 @@ public class SgdModelProvider implements Provider<SgdModel> {
         builder.directory(new File(graphchi));
         builder.command("./toolkits/collaborative_filtering/sgd" ,
                 "--training="+ currPath+"train",
-                "--sgd_lambda=1e-4",
-                "--sgd_gamma=1e-4" ,
+                "--sgd_lambda=.015",
+                "--sgd_gamma=1e-3" ,
                 "--minval="+clamp.lowerBound,
                 " --maxval="+clamp.upperBound,
                 " --max_iter=6",
@@ -72,7 +72,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
         try {
             Process sgd = builder.start();
             sgd.waitFor();
-            InputStream error = sgd.getErrorStream();
+
         }
         catch(IOException e){
             throw new RuntimeException(e);

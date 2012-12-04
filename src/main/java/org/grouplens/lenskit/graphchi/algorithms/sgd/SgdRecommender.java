@@ -14,7 +14,7 @@ public class SgdRecommender extends ScoreBasedItemRecommender {
 
     @Override
     public boolean canUseHistory(){
-        return true;
+        return false;
     }
 
 }

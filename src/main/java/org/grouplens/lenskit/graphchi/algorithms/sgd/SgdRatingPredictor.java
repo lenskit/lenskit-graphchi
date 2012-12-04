@@ -9,6 +9,7 @@ import org.grouplens.lenskit.transform.clamp.ClampingFunction;
 import org.grouplens.lenskit.util.Index;
 import org.grouplens.lenskit.vectors.MutableSparseVector;
 import org.grouplens.lenskit.vectors.SparseVector;
+import org.grouplens.lenskit.vectors.VectorEntry;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -39,10 +40,6 @@ public class SgdRatingPredictor implements RatingPredictor{
         int iid = itemIds.getIndex(item);
         double score = 0.0;
 
-        DenseMatrix d = (DenseMatrix) users;
-        d.print();
-        d = (DenseMatrix) items;
-        d.print();
 
         for(int i = 0; i < featureCount; ++i){
             score += users.get(uid, i) * items.get(iid, i);
@@ -55,15 +52,15 @@ public class SgdRatingPredictor implements RatingPredictor{
     @Nonnull
     public SparseVector score(long user,  @Nonnull Collection<Long> items){
         MutableSparseVector vector = new MutableSparseVector(items);
-        for(long i : vector.keySet()){
-            vector.set(i, score(user, i));
+        for(VectorEntry i : vector.fast(VectorEntry.State.EITHER)){
+            vector.set(i, score(user, i.getKey()));
         }
         return vector.freeze();
     }
 
     public void score(long user,  @Nonnull MutableSparseVector scores){
-        for(long i : scores.keySet()){
-            scores.set(i, score(user, i));
+        for(VectorEntry i : scores.fast(VectorEntry.State.EITHER)){
+            scores.set(i, score(user, i.getKey()));
         }
     }
 
