@@ -88,13 +88,6 @@
       <artifactId>lenskit-core</artifactId>
       <version>1.0</version>
     </dependency>
-    <dependency>
-      <!-- to get the lenskit cursors -->
-      <groupId>org.grouplens.lenskit</groupId>
-      <artifactId>lenskit-core</artifactId>
-      <version>1.0</version>
-    </dependency>
-
     <!-- test libraries -->
     <dependency>
         <groupId>junit</groupId>
