@@ -6,7 +6,6 @@ import static org.junit.Assert.*;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class TestBufferedReaderMatrixSource {
 
@@ -122,7 +121,7 @@ public class TestBufferedReaderMatrixSource {
             for(int j = 0; j<rows; ++j){
                 entry = metaDataSource.next();
                 assertEquals(j, entry.user);
-                assertEquals(i, entry.item);
+                assertEquals(i, entry.column);
             }
     }
 

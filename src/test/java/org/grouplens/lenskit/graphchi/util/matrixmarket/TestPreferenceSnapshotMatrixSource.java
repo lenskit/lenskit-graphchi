@@ -1,7 +1,5 @@
 package org.grouplens.lenskit.graphchi.util.matrixmarket;
 
-import it.unimi.dsi.fastutil.longs.LongCollection;
-import it.unimi.dsi.fastutil.longs.LongArrayList;
 import org.grouplens.lenskit.data.dao.EventCollectionDAO;
 import org.grouplens.lenskit.data.event.Rating;
 import org.grouplens.lenskit.data.event.SimpleRating;
@@ -88,7 +86,7 @@ public class TestPreferenceSnapshotMatrixSource {
             entry = sourceIterator.next();
             pref = snapshotIterator.next();
             assertEquals(entry.user, pref.getUserIndex());
-            assertEquals(entry.item, pref.getItemIndex());
+            assertEquals(entry.column, pref.getItemIndex());
             assertEquals(entry.rating, pref.getValue(), EPSILON);
         }
     }

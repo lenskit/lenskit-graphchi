@@ -2,21 +2,21 @@ package org.grouplens.lenskit.graphchi.util;
 
 public class MatrixEntry implements Cloneable{
     public int user;
-    public int item;
+    public int column;
     public double rating;
 
     public MatrixEntry set(int user, int item, double rating){
         this.user = user;
-        this.item = item;
+        this.column = item;
         this.rating = rating;
         return this;
     }
 
     public MatrixEntry clone(){
-        return new MatrixEntry().set(user, item, rating);
+        return new MatrixEntry().set(user, column, rating);
     }
 
     public String toString(){
-        return user +" "+item +" "+rating;
+        return user +" "+ column +" "+rating;
     }
 }
