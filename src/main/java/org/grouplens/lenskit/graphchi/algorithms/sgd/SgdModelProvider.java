@@ -2,6 +2,7 @@ package org.grouplens.lenskit.graphchi.algorithms.sgd;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.grouplens.lenskit.core.Transient;
+import org.grouplens.lenskit.data.pref.PreferenceDomain;
 import org.grouplens.lenskit.graphchi.algorithms.sgd.param.FeatureCount;
 import org.grouplens.lenskit.graphchi.algorithms.sgd.param.GraphchiLocation;
 import org.grouplens.lenskit.graphchi.util.GraphchiSerializer;
@@ -11,6 +12,8 @@ import org.grouplens.lenskit.graphchi.util.matrices.DenseMatrix;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.BufferedReaderMatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.MatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
+import org.grouplens.lenskit.transform.clamp.ClampingFunction;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -18,7 +21,6 @@ import javax.inject.Provider;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class SgdModelProvider implements Provider<SgdModel> {
     private UserItemMatrixSource trainMatrix;
@@ -27,12 +29,13 @@ public class SgdModelProvider implements Provider<SgdModel> {
 
     private String directory;
     private int featureCount;
-    private BoundedClampingFunction clamp;
+    private ClampingFunction clamp;
     private String graphchi;
+    private PreferenceDomain domain;
 
     @Inject
-    public SgdModelProvider( @Transient @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount, @Transient @Nonnull BoundedClampingFunction clamp,
-                            @GraphchiLocation @Nonnull String graphchi){
+    public SgdModelProvider( @Transient @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount, @Transient @Nonnull ClampingFunction clamp,
+                            @GraphchiLocation @Nonnull String graphchi, @Nullable PreferenceDomain domain){
         trainMatrix = source;
         int id = ++globalId;
         directory = "sgd"+id;
@@ -40,6 +43,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
                                 // feature counts.
         this.clamp = clamp;
         this.graphchi = graphchi;
+        this.domain = domain;
     }
 
     private void serializeData() throws IOException{
@@ -61,14 +65,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
         ProcessBuilder builder = new ProcessBuilder();
         String currPath = new File(directory).getAbsolutePath()+"/";
         builder.directory(new File(graphchi));
-        builder.command("./toolkits/collaborative_filtering/sgd" ,
-                "--training="+ currPath+"train",
-                "--sgd_lambda=.015",
-                "--sgd_gamma=1e-3" ,
-                "--minval="+clamp.lowerBound,
-                " --maxval="+clamp.upperBound,
-                " --max_iter=6",
-                "--quiet=1");
+        builder.command(buildCommand(currPath));
         try {
             Process sgd = builder.start();
             sgd.waitFor();
@@ -107,7 +104,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
             //Item Feature -> Preference
             vMatrix[entry.user][entry.item] = entry.rating;
         }
-        try{
+        try{ //Clean up temps
             FileUtils.deleteDirectory(new File(directory));
 
         }
@@ -116,5 +113,26 @@ public class SgdModelProvider implements Provider<SgdModel> {
         }
         return new SgdModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix),
                 trainMatrix.getUserIndexes(), trainMatrix.getItemIndexes(), featureCount, clamp);
+    }
+
+    private String[] buildCommand(String path){
+        String[] args;
+        if(domain!=null){
+            args = new String[8];
+        }
+        else{
+            args = new String[6];
+        }
+        args[0] = "./toolkits/collaborative_filtering/sgd";
+        args[1] = "--training="+ path+"train";
+        args[2] = "--sgd_lambda=.015";
+        args[3] = "--sgd_gamma=1e-3" ;
+        args[4] = "--max_iter=6";
+        args[5] = "--quiet=1";
+        if(domain != null){
+            args[6] = "--minval="+domain.getMinimum();
+            args[7] = "--maxval="+domain.getMaximum();
+        }
+        return args;
     }
 }
