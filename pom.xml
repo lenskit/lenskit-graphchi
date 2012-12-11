@@ -14,7 +14,7 @@
     <version>1.0</version>
     <packaging>pom</packaging>
     <name>LensKit-GraphChi-Native</name>
-    <description>Collaborative filtering toolkit from GroupLens Research supported by GraphChi by Carnegie Mellon University</description>
+    <description>Collaborative filtering toolkit from GroupLens Research supported by GraphChi from Carnegie Mellon University</description>
     <url>${lenskit.web.url}</url>
     <organization>
         <name>GroupLens Research</name>
@@ -86,7 +86,7 @@
     <dependency>
       <groupId>org.grouplens.lenskit</groupId>
       <artifactId>lenskit-core</artifactId>
-      <version>1.0</version>
+      <version>1.1-SNAPSHOT</version>
     </dependency>
     <!-- test libraries -->
     <dependency>

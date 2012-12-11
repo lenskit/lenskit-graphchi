@@ -13,6 +13,8 @@ import org.grouplens.lenskit.graphchi.util.matrixmarket.BufferedReaderMatrixSour
 import org.grouplens.lenskit.graphchi.util.matrixmarket.MatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
 import org.grouplens.lenskit.transform.clamp.ClampingFunction;
+import org.grouplens.lenskit.iterative.params.LearningRate;
+import org.grouplens.lenskit.iterative.params.RegularizationTerm;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,15 +34,20 @@ public class SgdModelProvider implements Provider<SgdModel> {
     private ClampingFunction clamp;
     private String graphchi;
     private PreferenceDomain domain;
+    private double lambda;
+    private double gamma;
 
     @Inject
-    public SgdModelProvider( @Transient @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount, @Transient @Nonnull ClampingFunction clamp,
-                            @GraphchiLocation @Nonnull String graphchi, @Nullable PreferenceDomain domain){
+    public SgdModelProvider( @Transient @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount,
+                             @LearningRate double lambda, @RegularizationTerm double gamma, @Transient @Nonnull ClampingFunction clamp,
+                             @GraphchiLocation @Nonnull String graphchi, @Nullable PreferenceDomain domain){
         trainMatrix = source;
         int id = ++globalId;
         directory = "sgd"+id;
         this.featureCount = 20; // Magic number because GraphChi currently doesn't allow runtime configuration of
                                 // feature counts.
+        this.lambda = lambda;
+        this.gamma = gamma;
         this.clamp = clamp;
         this.graphchi = graphchi;
         this.domain = domain;
@@ -125,8 +132,8 @@ public class SgdModelProvider implements Provider<SgdModel> {
         }
         args[0] = "./toolkits/collaborative_filtering/sgd";
         args[1] = "--training="+ path+"train";
-        args[2] = "--sgd_lambda=.015";
-        args[3] = "--sgd_gamma=1e-3" ;
+        args[2] = "--sgd_lambda="+ lambda;
+        args[3] = "--sgd_gamma=" + gamma;
         args[4] = "--max_iter=6";
         args[5] = "--quiet=1";
         if(domain != null){
