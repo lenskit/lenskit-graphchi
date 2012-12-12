@@ -25,18 +25,28 @@ import java.io.File;
 import java.io.IOException;
 
 public class SgdModelProvider implements Provider<SgdModel> {
-    private UserItemMatrixSource trainMatrix;
 
     private static int globalId = 0;
 
+    private UserItemMatrixSource trainMatrix;
     private String directory;
     private int featureCount;
+    private double lambda;
+    private double gamma;
     private ClampingFunction clamp;
     private String graphchi;
     private PreferenceDomain domain;
-    private double lambda;
-    private double gamma;
 
+    /**
+     *
+     * @param source the
+     * @param featureCount The number of features the SGD algorithm will use. Currently this is ignored and set to 20.
+     * @param lambda The lambda (learning rate) supplied to GraphChi.
+     * @param gamma The gamma (Regularization Term) supplied to Graphchi when the source matrix is factored.
+     * @param clamp The clamping function which is used only during recommendations, not during the factorization.
+     * @param graphchi The path to graphchi's home folder.
+     * @param domain The PreferenceDomain containing the upper and lower bounds for the SGD algorithm to clamp with.
+     */
     @Inject
     public SgdModelProvider( @Transient @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount,
                              @LearningRate double lambda, @RegularizationTerm double gamma, @Transient @Nonnull ClampingFunction clamp,
@@ -54,7 +64,16 @@ public class SgdModelProvider implements Provider<SgdModel> {
     }
 
 
-
+    /**
+     * get() serializes the input matrix given in the constructor.
+     *
+     * It then runs GraphChi's SGD algorithm on the file and loads the results into an SGDModel.
+     *
+     * Finally it deletes the whole temporary directory.
+     *
+     * If any IOException occurs during the serializing, reading, or executing of graphchi, it is thrown as a RuntimeException.
+     * @return an SGDModel with a filled U and V matrix
+     */
     public SgdModel get() {
         String currPath = new File(directory).getAbsolutePath()+"/";
         //Serialize data and run graphchi on it
@@ -93,6 +112,11 @@ public class SgdModelProvider implements Provider<SgdModel> {
                 trainMatrix.getUserIndexes(), trainMatrix.getItemIndexes(), featureCount, clamp);
     }
 
+    /*
+     * Creates a new directory called sgd**** where **** is an int ID
+     * Serializes the source matrix into a matrix-market file.
+     * If any exception occurs, it is thrown as a RuntimeException.
+     */
     private void serializeData() throws IOException{
         File dir = new File(directory);
         if(!(dir.mkdir()) &&  !dir.exists())
@@ -100,6 +124,12 @@ public class SgdModelProvider implements Provider<SgdModel> {
         GraphchiSerializer.serializeMatrixSource(trainMatrix, directory+"/train");
     }
 
+
+    /*
+     * Calls serialize data and then invokes Graphchi's SGD algorithm in the matrix market format.
+     *
+     * All resulting files are stored in the same directory as
+     */
     private void runGraphchi(String currPath){
         try{
             serializeData();
@@ -123,6 +153,10 @@ public class SgdModelProvider implements Provider<SgdModel> {
             throw new RuntimeException(e);
         }
     }
+
+    /*
+     * Builds the arguments for the SGD command. It supplies an optional upper and lower bound if the PreferenceDomain is given.
+     */
     private String[] buildCommand(String path){
         String[] args;
         if(domain!=null){
