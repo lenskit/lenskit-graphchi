@@ -53,6 +53,46 @@ public class SgdModelProvider implements Provider<SgdModel> {
         this.domain = domain;
     }
 
+
+
+    public SgdModel get() {
+        String currPath = new File(directory).getAbsolutePath()+"/";
+        //Serialize data and run graphchi on it
+        runGraphchi(currPath);
+        String fileroot = currPath+"/train";
+        //Get the results
+        MatrixSource u;
+        MatrixSource v;
+        try{
+            u = BufferedReaderMatrixSource.getDenseMatrixSource(fileroot + "_U.mm", true, true);
+            v = BufferedReaderMatrixSource.getDenseMatrixSource(fileroot + "_V.mm", true, true);
+        }
+        catch(IOException e){
+            throw new RuntimeException(e);
+        }
+        //These will be used to generate the DenseMatrix objects for the model
+        double[][] uMatrix = new double[u.getMatrixRowCount()][u.getMatrixColumnCount()];
+        double[][] vMatrix = new double[v.getMatrixRowCount()][v.getMatrixColumnCount()];
+        //Populate the U matrix
+        for(MatrixEntry entry : u){
+            //User Feature -> Preference
+            uMatrix[entry.user][entry.column] = entry.rating;
+        }
+        //Populate the V matrix
+        for(MatrixEntry entry : v){
+            //Item Feature -> Preference
+            vMatrix[entry.user][entry.column] = entry.rating;
+        }
+        try{ //Clean up temps
+            FileUtils.deleteDirectory(new File(directory));
+        }
+        catch(IOException e){
+            throw new RuntimeException(e);
+        }
+        return new SgdModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix),
+                trainMatrix.getUserIndexes(), trainMatrix.getItemIndexes(), featureCount, clamp);
+    }
+
     private void serializeData() throws IOException{
         File dir = new File(directory);
         if(!(dir.mkdir()) &&  !dir.exists())
@@ -60,8 +100,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
         GraphchiSerializer.serializeMatrixSource(trainMatrix, directory+"/train");
     }
 
-
-    public SgdModel get() {
+    private void runGraphchi(String currPath){
         try{
             serializeData();
         }
@@ -70,7 +109,6 @@ public class SgdModelProvider implements Provider<SgdModel> {
         }
 
         ProcessBuilder builder = new ProcessBuilder();
-        String currPath = new File(directory).getAbsolutePath()+"/";
         builder.directory(new File(graphchi));
         builder.command(buildCommand(currPath));
         try {
@@ -84,44 +122,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
         catch(InterruptedException e){
             throw new RuntimeException(e);
         }
-        String fileroot = currPath+"/train";
-        //Get the results
-        MatrixSource u;
-        MatrixSource v;
-        try{
-            u = BufferedReaderMatrixSource.getDenseMatrixSource(fileroot + "_U.mm", true, true);
-            v = BufferedReaderMatrixSource.getDenseMatrixSource(fileroot + "_V.mm", true, true);
-        }
-        catch(IOException e){
-            throw new RuntimeException(e);
-        }
-
-        //These will be used to generate the DenseMatrix objects for the model
-        double[][] uMatrix = new double[u.getMatrixRowCount()][u.getMatrixColumnCount()];
-        double[][] vMatrix = new double[v.getMatrixRowCount()][v.getMatrixColumnCount()];
-
-        //Populate the U matrix
-        for(MatrixEntry entry : u){
-            //User Feature -> Preference
-            uMatrix[entry.user][entry.column] = entry.rating;
-        }
-
-        //Populate the V matrix
-        for(MatrixEntry entry : v){
-            //Item Feature -> Preference
-            vMatrix[entry.user][entry.column] = entry.rating;
-        }
-        try{ //Clean up temps
-            FileUtils.deleteDirectory(new File(directory));
-
-        }
-        catch(IOException e){
-            throw new RuntimeException(e);
-        }
-        return new SgdModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix),
-                trainMatrix.getUserIndexes(), trainMatrix.getItemIndexes(), featureCount, clamp);
     }
-
     private String[] buildCommand(String path){
         String[] args;
         if(domain!=null){
