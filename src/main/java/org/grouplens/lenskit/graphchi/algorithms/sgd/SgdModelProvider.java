@@ -1,3 +1,22 @@
+/*
+ * LensKit, an open source recommender systems toolkit.
+ * Copyright 2010-2012 Regents of the University of Minnesota and contributors
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
 package org.grouplens.lenskit.graphchi.algorithms.sgd;
 
 import org.codehaus.plexus.util.FileUtils;
@@ -24,6 +43,12 @@ import javax.inject.Provider;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * SGD recommender builder. It uses GraphChi's SGD algorithm to compute the factorized matrices.
+ * These are documented at <a href="https://code.google.com/p/graphchi/">its code.google page</a>
+ *
+ * @author Daniel Gratzer < danny.gratzer@gmail.com >
+ */
 public class SgdModelProvider implements Provider<SgdModel> {
 
     private static int globalId = 0;
@@ -39,7 +64,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
 
     /**
      *
-     * @param source the
+     * @param source the matrix factorized using GraphChi's SGD algorithm.
      * @param featureCount The number of features the SGD algorithm will use. Currently this is ignored and set to 20.
      * @param lambda The lambda (learning rate) supplied to GraphChi.
      * @param gamma The gamma (Regularization Term) supplied to Graphchi when the source matrix is factored.
@@ -66,9 +91,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
 
     /**
      * get() serializes the input matrix given in the constructor.
-     *
      * It then runs GraphChi's SGD algorithm on the file and loads the results into an SGDModel.
-     *
      * Finally it deletes the whole temporary directory.
      *
      * If any IOException occurs during the serializing, reading, or executing of graphchi, it is thrown as a RuntimeException.
