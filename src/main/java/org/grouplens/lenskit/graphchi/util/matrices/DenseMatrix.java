@@ -37,6 +37,9 @@ public class DenseMatrix implements Matrix{
         this.entries = entries;
     }
 
+    /**
+     * Implementation of the Matrix interfaces get method.
+     */
     public double get(int row, int column){
         return entries[row][column];
     }

@@ -23,7 +23,6 @@ import org.codehaus.plexus.util.FileUtils;
 import org.grouplens.lenskit.core.Transient;
 import org.grouplens.lenskit.data.pref.PreferenceDomain;
 import org.grouplens.lenskit.graphchi.algorithms.sgd.param.FeatureCount;
-import org.grouplens.lenskit.graphchi.algorithms.sgd.param.GraphchiLocation;
 import org.grouplens.lenskit.graphchi.util.GraphchiSerializer;
 
 import org.grouplens.lenskit.graphchi.util.MatrixEntry;
@@ -69,13 +68,12 @@ public class SgdModelProvider implements Provider<SgdModel> {
      * @param lambda The lambda (learning rate) supplied to GraphChi.
      * @param gamma The gamma (Regularization Term) supplied to Graphchi when the source matrix is factored.
      * @param clamp The clamping function which is used only during recommendations, not during the factorization.
-     * @param graphchi The path to graphchi's home folder.
      * @param domain The PreferenceDomain containing the upper and lower bounds for the SGD algorithm to clamp with.
      */
     @Inject
     public SgdModelProvider( @Transient @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount,
-                             @LearningRate double lambda, @RegularizationTerm double gamma, @Transient @Nonnull ClampingFunction clamp,
-                             @GraphchiLocation @Nonnull String graphchi, @Nullable PreferenceDomain domain){
+                             @LearningRate double lambda, @RegularizationTerm double gamma,
+                             @Transient @Nonnull ClampingFunction clamp, @Nullable PreferenceDomain domain){
         trainMatrix = source;
         int id = ++globalId;
         directory = "sgd"+id;
@@ -84,7 +82,10 @@ public class SgdModelProvider implements Provider<SgdModel> {
         this.lambda = lambda;
         this.gamma = gamma;
         this.clamp = clamp;
-        this.graphchi = graphchi;
+        this.graphchi = System.getProperty("graphchi.location");
+        if(graphchi == null){
+            throw new RuntimeException("No Path for Graphchi Found");
+        }
         this.domain = domain;
     }
 
