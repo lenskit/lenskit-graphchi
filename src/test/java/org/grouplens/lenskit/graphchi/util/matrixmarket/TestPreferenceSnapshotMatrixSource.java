@@ -85,7 +85,7 @@ public class TestPreferenceSnapshotMatrixSource {
         while(sourceIterator.hasNext() && snapshotIterator.hasNext()){
             entry = sourceIterator.next();
             pref = snapshotIterator.next();
-            assertEquals(entry.user, pref.getUserIndex());
+            assertEquals(entry.row, pref.getUserIndex());
             assertEquals(entry.column, pref.getItemIndex());
             assertEquals(entry.rating, pref.getValue(), EPSILON);
         }

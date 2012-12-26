@@ -120,7 +120,7 @@ public class TestBufferedReaderMatrixSource {
         for(int i = 0; i<columns; ++i)
             for(int j = 0; j<rows; ++j){
                 entry = metaDataSource.next();
-                assertEquals(j, entry.user);
+                assertEquals(j, entry.row);
                 assertEquals(i, entry.column);
             }
     }
