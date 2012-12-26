@@ -7,7 +7,6 @@ import org.grouplens.lenskit.data.dao.EventCollectionDAO;
 import org.grouplens.lenskit.data.event.Rating;
 import org.grouplens.lenskit.data.event.Ratings;
 import org.grouplens.lenskit.graphchi.algorithms.sgd.param.FeatureCount;
-import org.grouplens.lenskit.graphchi.algorithms.sgd.param.GraphchiLocation;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.PreferenceSnapshotMatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
 import org.junit.AfterClass;
@@ -47,7 +46,6 @@ public class TestSgdRecommender {
         EventCollectionDAO.Factory manager = new EventCollectionDAO.Factory(rs);
         LenskitRecommenderEngineFactory factory = new LenskitRecommenderEngineFactory(manager);
         factory.bind(Integer.class).withQualifier(FeatureCount.class).to(20);
-        factory.bind(String.class).withQualifier(GraphchiLocation.class).to("/home/danny/GroupLens/graphchi/");
         factory.bind(UserItemMatrixSource.class).to(PreferenceSnapshotMatrixSource.class);
         factory.bind(RatingPredictor.class).to(SgdRatingPredictor.class);
         factory.bind(ItemRecommender.class).to(SgdRecommender.class);

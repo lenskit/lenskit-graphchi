@@ -45,25 +45,38 @@
         <lenskit.clean.removeAll>false</lenskit.clean.removeAll>
     </properties>
     <build>
-    <pluginManagement>
-    <plugins>
-    <!-- Configure the compiler -->
-    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5.1</version>
-        <configuration>
-            <source>1.6</source>
-            <target>1.6</target>
-        </configuration>
-    </plugin>
-    <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <version>1.4</version>
-    </plugin>
-    </plugins>
-    </pluginManagement>
+        <pluginManagement>
+            <plugins>
+            <!-- Configure the compiler -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.5.1</version>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.gmaven</groupId>
+                    <artifactId>gmaven-plugin</artifactId>
+                    <version>1.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.12.4</version>
+                    <configuration>
+                        <systemProperties>
+                            <property>
+                                <name>graphchi.location</name>
+                                <value>../graphchi</value>
+                            </property>
+                        </systemProperties>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
     <!-- force the Groovy version we want -->
     <dependencies>
@@ -105,7 +118,4 @@
         <version>1.1</version>
     </dependency>
     </dependencies>
-
-
-
 </project>
