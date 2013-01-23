@@ -58,9 +58,8 @@ public class TestSgdRecommender {
     /**
      * Tests {@code recommend(long)}.
      */
-    @Test
+    //@Test
     public void testRecommend1() {
-
         LongList recs = recommender.recommend(1);
         assertTrue(recs.isEmpty());
 
@@ -93,7 +92,7 @@ public class TestSgdRecommender {
     /**
      * Tests {@code recommend(long, int)}.
      */
-    @Test
+    //@Test
     public void testRecommend2() {
 
         LongList recs = recommender.recommend(6, 4);
@@ -130,7 +129,7 @@ public class TestSgdRecommender {
     /**
      * Tests {@code recommend(long, Set)}.
      */
-    @Test
+    //@Test
     public void testRecommend3() {
 
         LongList recs = recommender.recommend(5, null);
@@ -180,7 +179,7 @@ public class TestSgdRecommender {
     /**
      * Tests {@code recommend(long, int, Set, Set)}.
      */
-    @Test
+    //@Test
     public void testRecommend4() {
         LongList recs = recommender.recommend(6, -1, null, null);
         assertEquals(3, recs.size());

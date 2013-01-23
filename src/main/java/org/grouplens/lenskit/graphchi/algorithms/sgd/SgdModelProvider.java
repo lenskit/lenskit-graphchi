@@ -65,14 +65,14 @@ public class SgdModelProvider implements Provider<SgdModel> {
      *
      * @param source the matrix factorized using GraphChi's SGD algorithm.
      * @param featureCount The number of features the SGD algorithm will use. Currently this is ignored and set to 20.
-     * @param lambda The lambda (learning rate) supplied to GraphChi.
-     * @param gamma The gamma (Regularization Term) supplied to Graphchi when the source matrix is factored.
+     * @param lambda The lambda (Regularization Term) supplied to GraphChi.
+     * @param gamma The gamma (learning rate) supplied to Graphchi when the source matrix is factored.
      * @param clamp The clamping function which is used only during recommendations, not during the factorization.
      * @param domain The PreferenceDomain containing the upper and lower bounds for the SGD algorithm to clamp with.
      */
     @Inject
     public SgdModelProvider( @Transient @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount,
-                             @LearningRate double lambda, @RegularizationTerm double gamma,
+                             @LearningRate double gamma, @RegularizationTerm double lambda,
                              @Transient @Nonnull ClampingFunction clamp, @Nullable PreferenceDomain domain){
         trainMatrix = source;
         int id = ++globalId;
@@ -82,7 +82,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
         this.lambda = lambda;
         this.gamma = gamma;
         this.clamp = clamp;
-        this.graphchi = System.getProperty("graphchi.location");
+        this.graphchi = "/home/danny/GroupLens/graphchi"; //System.getProperty("graphchi.location");
         if(graphchi == null){
             throw new RuntimeException("No Path for Graphchi Found");
         }
@@ -100,9 +100,11 @@ public class SgdModelProvider implements Provider<SgdModel> {
      */
     public SgdModel get() {
         String currPath = new File(directory).getAbsolutePath()+"/";
+
         //Serialize data and run graphchi on it
         runGraphchi(currPath);
         String fileroot = currPath+"/train";
+
         //Get the results
         MatrixSource u;
         MatrixSource v;
@@ -113,9 +115,11 @@ public class SgdModelProvider implements Provider<SgdModel> {
         catch(IOException e){
             throw new RuntimeException(e);
         }
+
         //These will be used to generate the DenseMatrix objects for the model
         double[][] uMatrix = new double[u.getMatrixRowCount()][u.getMatrixColumnCount()];
         double[][] vMatrix = new double[v.getMatrixRowCount()][v.getMatrixColumnCount()];
+
         //Populate the U matrix
         for(MatrixEntry entry : u){
             //User Feature -> Preference
@@ -126,7 +130,9 @@ public class SgdModelProvider implements Provider<SgdModel> {
             //Item Feature -> Preference
             vMatrix[entry.row][entry.column] = entry.rating;
         }
-        try{ //Clean up temps
+
+        //Clean up temps
+        try{
             FileUtils.deleteDirectory(new File(directory));
         }
         catch(IOException e){
@@ -143,8 +149,11 @@ public class SgdModelProvider implements Provider<SgdModel> {
      */
     private void serializeData() throws IOException{
         File dir = new File(directory);
-        if(!(dir.mkdir()) &&  !dir.exists())
+        if(!(dir.mkdir()) &&  !dir.exists()) {
+
             throw new IOException("Couldn't make new directory "+directory);
+
+        }
         GraphchiSerializer.serializeMatrixSource(trainMatrix, directory+"/train");
     }
 

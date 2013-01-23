@@ -57,8 +57,8 @@ public class GraphchiSerializer {
         double[] ratings = new double[source.getMatrixEntryCount()];
         int index = 0;
         for(MatrixEntry entry : source.fast()){
-            users[index] = entry.row +1; //Convert to base 1 for graphchi
-            items[index] = entry.column +1;
+            users[index] = entry.row + 1; //Convert to base 1 for graphchi
+            items[index] = entry.column + 1;
             ratings[index] = entry.rating;
             ++index;
         }

@@ -9,10 +9,10 @@
         <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
-    <groupId>lenskit-graphchi-native</groupId>
+    <groupId>org.grouplens.lenskit</groupId>
     <artifactId>lenskit-graphchi-native</artifactId>
     <version>1.0</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <name>LensKit-GraphChi-Native</name>
     <description>Collaborative filtering toolkit from GroupLens Research supported by GraphChi from Carnegie Mellon University</description>
     <url>${lenskit.web.url}</url>

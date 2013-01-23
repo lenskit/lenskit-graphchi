@@ -117,11 +117,11 @@ public class TestBufferedReaderMatrixSource {
     @Test
     public void testPositions(){
         MatrixEntry entry;
-        for(int i = 0; i<columns; ++i)
-            for(int j = 0; j<rows; ++j){
+        for(int i = 0; i<rows; ++i)
+            for(int j = 0; j<columns; ++j){
                 entry = metaDataSource.next();
-                assertEquals(j, entry.row);
-                assertEquals(i, entry.column);
+                assertEquals(i, entry.row);
+                assertEquals(j, entry.column);
             }
     }
 

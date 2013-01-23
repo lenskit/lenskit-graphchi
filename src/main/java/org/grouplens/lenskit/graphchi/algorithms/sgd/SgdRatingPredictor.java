@@ -69,21 +69,25 @@ public class SgdRatingPredictor implements RatingPredictor{
     public double score(long user, long item){
         int uid = userIds.getIndex(user);
         int iid = itemIds.getIndex(item);
+        if (iid == -1 || uid == -1) {
+            System.out.println("Error computing "+uid+" : "+iid);
+            return Double.NaN;
+        }
         double score = 0.0;
 
 
         for(int i = 0; i < featureCount; ++i){
             score += users.get(uid, i) * items.get(iid, i);
-            score = clamp.apply(user, item, score);
         }
-        return score;
+
+        return clamp.apply(user, item, score);
     }
 
 
     /**
      * Scores a collection of items for a user.
      * @param user The user's ID
-     * @param items A collection of the item's IDs
+     * @param items A collection of the items' IDs
      * @return A SparseVector of scores in the same order as their items.
      */
     @Nonnull
@@ -118,7 +122,7 @@ public class SgdRatingPredictor implements RatingPredictor{
      * Ignores the user's history and scores the item using the <code>score(long, long)</code> method.
      */
     public double score( @Nonnull UserHistory<? extends Event> profile, long item){
-         return score(profile.getUserId(), item);
+        return score(profile.getUserId(), item);
     }
 
     /**

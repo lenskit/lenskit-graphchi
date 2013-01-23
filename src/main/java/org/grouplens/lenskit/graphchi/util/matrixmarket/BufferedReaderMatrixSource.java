@@ -25,8 +25,8 @@ public class BufferedReaderMatrixSource extends AbstractPollingCursor<MatrixEntr
     private MatrixEntry entry;
     private static Pattern whiteSpacePattern = Pattern.compile("\\s+");
 
-    private int currentRow =    -1; //Starts negative to allow for initial increment in parseLine()
-    private int currentColumn =  0;
+    private int currentColumn = -1; //Starts negative to allow for initial increment in parseLine()
+    private int currentRow    =  0;
 
     /*
      * A private constructor which takes in metadata associated with the matrix.
@@ -132,10 +132,10 @@ public class BufferedReaderMatrixSource extends AbstractPollingCursor<MatrixEntr
             return false;
 
         double rating = Double.parseDouble(nextLine);
-        ++currentRow;
-        if(currentRow == rows){
-            ++currentColumn;
-            currentRow = 0;
+        ++currentColumn;
+        if(currentColumn == columns){
+            ++currentRow;
+            currentColumn = 0;
         }
 
         entry.set(currentRow, currentColumn, rating);
