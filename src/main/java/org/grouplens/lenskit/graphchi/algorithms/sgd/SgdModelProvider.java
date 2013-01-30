@@ -20,6 +20,7 @@
 package org.grouplens.lenskit.graphchi.algorithms.sgd;
 
 import org.codehaus.plexus.util.FileUtils;
+import org.grouplens.lenskit.baseline.BaselinePredictor;
 import org.grouplens.lenskit.core.Transient;
 import org.grouplens.lenskit.data.pref.PreferenceDomain;
 import org.grouplens.lenskit.graphchi.algorithms.sgd.param.FeatureCount;
@@ -60,6 +61,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
     private ClampingFunction clamp;
     private String graphchi;
     private PreferenceDomain domain;
+    private BaselinePredictor baseline;
 
     /**
      *
@@ -73,7 +75,8 @@ public class SgdModelProvider implements Provider<SgdModel> {
     @Inject
     public SgdModelProvider( @Transient @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount,
                              @LearningRate double gamma, @RegularizationTerm double lambda,
-                             @Transient @Nonnull ClampingFunction clamp, @Nullable PreferenceDomain domain){
+                             @Transient @Nonnull ClampingFunction clamp, @Nullable PreferenceDomain domain,
+                             @Nullable BaselinePredictor baseline){
         trainMatrix = source;
         int id = ++globalId;
         directory = "sgd"+id;
@@ -82,11 +85,16 @@ public class SgdModelProvider implements Provider<SgdModel> {
         this.lambda = lambda;
         this.gamma = gamma;
         this.clamp = clamp;
+
+        //TODO: Remove Debug////////////////////////////////////////////////////////////////////////
         this.graphchi = "/home/danny/GroupLens/graphchi"; //System.getProperty("graphchi.location");
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
         if(graphchi == null){
             throw new RuntimeException("No Path for Graphchi Found");
         }
         this.domain = domain;
+        this.baseline = baseline;
     }
 
 
@@ -139,7 +147,8 @@ public class SgdModelProvider implements Provider<SgdModel> {
             throw new RuntimeException(e);
         }
         return new SgdModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix),
-                trainMatrix.getUserIndexes(), trainMatrix.getItemIndexes(), featureCount, clamp);
+                trainMatrix.getUserIndexes(), trainMatrix.getItemIndexes(), featureCount, clamp,
+                baseline);
     }
 
     /*
@@ -150,9 +159,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
     private void serializeData() throws IOException{
         File dir = new File(directory);
         if(!(dir.mkdir()) &&  !dir.exists()) {
-
             throw new IOException("Couldn't make new directory "+directory);
-
         }
         GraphchiSerializer.serializeMatrixSource(trainMatrix, directory+"/train");
     }
@@ -178,6 +185,13 @@ public class SgdModelProvider implements Provider<SgdModel> {
             Process sgd = builder.start();
             sgd.waitFor();
 
+            //TODO: Remove Debug////////////////////////////////////////
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = sgd.getInputStream().read(buffer)) != -1) {
+                System.out.write(buffer, 0, len);
+            }
+            ////////////////////////////////////////////////////////////
         }
         catch(IOException e){
             throw new RuntimeException(e);

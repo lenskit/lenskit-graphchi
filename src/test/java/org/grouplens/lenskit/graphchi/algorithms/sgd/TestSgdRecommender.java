@@ -11,6 +11,7 @@ import org.grouplens.lenskit.graphchi.util.matrixmarket.PreferenceSnapshotMatrix
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class TestSgdRecommender {
     private static Recommender sgdRecommender;
     private static ItemRecommender recommender;
@@ -58,8 +60,9 @@ public class TestSgdRecommender {
     /**
      * Tests {@code recommend(long)}.
      */
-    //@Test
+    @Test
     public void testRecommend1() {
+
         LongList recs = recommender.recommend(1);
         assertTrue(recs.isEmpty());
 
@@ -92,7 +95,7 @@ public class TestSgdRecommender {
     /**
      * Tests {@code recommend(long, int)}.
      */
-    //@Test
+    @Test
     public void testRecommend2() {
 
         LongList recs = recommender.recommend(6, 4);
@@ -129,7 +132,7 @@ public class TestSgdRecommender {
     /**
      * Tests {@code recommend(long, Set)}.
      */
-    //@Test
+    @Test
     public void testRecommend3() {
 
         LongList recs = recommender.recommend(5, null);
@@ -179,7 +182,7 @@ public class TestSgdRecommender {
     /**
      * Tests {@code recommend(long, int, Set, Set)}.
      */
-    //@Test
+    @Test
     public void testRecommend4() {
         LongList recs = recommender.recommend(6, -1, null, null);
         assertEquals(3, recs.size());

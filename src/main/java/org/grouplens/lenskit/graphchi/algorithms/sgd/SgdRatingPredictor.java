@@ -20,6 +20,7 @@
 package org.grouplens.lenskit.graphchi.algorithms.sgd;
 
 import org.grouplens.lenskit.RatingPredictor;
+import org.grouplens.lenskit.baseline.BaselinePredictor;
 import org.grouplens.lenskit.data.Event;
 import org.grouplens.lenskit.data.UserHistory;
 import org.grouplens.lenskit.graphchi.util.matrices.Matrix;
@@ -49,6 +50,7 @@ public class SgdRatingPredictor implements RatingPredictor{
     private Index itemIds;
     private int featureCount;
     private ClampingFunction clamp;
+    private BaselinePredictor baseline;
 
     @Inject
     public SgdRatingPredictor(SgdModel model){
@@ -58,6 +60,7 @@ public class SgdRatingPredictor implements RatingPredictor{
         itemIds = model.itemIndex;
         featureCount = model.featureCount;
         clamp = model.clamp;
+        baseline = model.baseline;
     }
 
     /**
@@ -69,17 +72,13 @@ public class SgdRatingPredictor implements RatingPredictor{
     public double score(long user, long item){
         int uid = userIds.getIndex(user);
         int iid = itemIds.getIndex(item);
-        if (iid == -1 || uid == -1) {
-            System.out.println("Error computing "+uid+" : "+iid);
+        if (iid == -1) {
             return Double.NaN;
         }
         double score = 0.0;
-
-
         for(int i = 0; i < featureCount; ++i){
             score += users.get(uid, i) * items.get(iid, i);
         }
-
         return clamp.apply(user, item, score);
     }
 
@@ -93,20 +92,28 @@ public class SgdRatingPredictor implements RatingPredictor{
     @Nonnull
     public SparseVector score(long user,  @Nonnull Collection<Long> items){
         MutableSparseVector vector = new MutableSparseVector(items);
-        for(VectorEntry i : vector.fast(VectorEntry.State.EITHER)){
-            vector.set(i, score(user, i.getKey()));
-        }
+        score(user, vector);
         return vector.freeze();
     }
 
     /**
      * Scores a list of items for a given user and sets the MutableSparseVector with the scores.
      * @param user The user's ID.
-     * @param scores The mutable sparse vector containing the item IDs. that will be set with each item's score.
+     * @param vector The mutable sparse vector containing the item IDs. that will be set with each item's score.
      */
-    public void score(long user,  @Nonnull MutableSparseVector scores){
-        for(VectorEntry i : scores.fast(VectorEntry.State.EITHER)){
-            scores.set(i, score(user, i.getKey()));
+    public void score(long user,  @Nonnull MutableSparseVector vector){
+        for(VectorEntry i : vector.fast(VectorEntry.State.EITHER)){
+            if(itemIds.getIndex(i.getKey()) == -1) {
+                if(baseline == null){
+                    vector.clear(i);
+                }
+                else {
+                    //TODO: Remove Debug////////////////////////////////////////
+                    //baseline.predict(user, null,
+                }
+                continue;
+            }
+            vector.set(i, score(user, i.getKey()));
         }
     }
 
