@@ -31,7 +31,12 @@ import javax.inject.Inject;
 import java.util.Iterator;
 
 /**
- * The wrapper for a PreferenceSnapshot to act as a matrix source. It is
+ * The wrapper for a PreferenceSnapshot to act as a matrix source.
+ * This is the default provider for userItemMatrixSource.
+ *
+ * Every public function is inherited or implemented from <code>AbstractPollingCursor</code> or <code>UserItemMatrixSource</code>
+ *
+ * @author Daniel Gratzer < danny.gratzer@gmail.com >
  */
 @DefaultProvider(PreferenceSnapshotMatrixSource.Provider.class)
 public class PreferenceSnapshotMatrixSource extends AbstractPollingCursor<MatrixEntry> implements UserItemMatrixSource{
@@ -41,11 +46,21 @@ public class PreferenceSnapshotMatrixSource extends AbstractPollingCursor<Matrix
         private PreferenceSnapshot snapshot;
         private boolean sorted = false;
 
+        /**
+         * This is the default injected constructor.
+         *
+         * It is identical to <code> Provider(dao, false) </code>
+         * @param dao used to create a PreferenceSnapshot for the MatrixSource.
+         */
         @Inject
         public Provider(DataAccessObject dao){
             snapshot = new PackedPreferenceSnapshot.Provider(dao).get();
         }
 
+        /**
+         * @param dao used to create a PreferenceSnapshot for the MatrixSource
+         * @param sorted A flag used to determine whether the matrix source should be sorted prior to serialization.
+         */
         public Provider(DataAccessObject dao, boolean sorted){
             this(dao);
             this.sorted = sorted;
@@ -93,6 +108,10 @@ public class PreferenceSnapshotMatrixSource extends AbstractPollingCursor<Matrix
     }
 
 
+    /**
+     * Gets the next IndexedPreference from the PreferenceSnapshot and returns it in a MatrixEntry
+     * @return The next entry in the preference snapshot.
+     */
     public MatrixEntry poll(){
         if(fastIterator.hasNext()){
             IndexedPreference pref = fastIterator.next();
