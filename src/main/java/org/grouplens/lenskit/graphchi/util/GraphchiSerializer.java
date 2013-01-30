@@ -42,6 +42,10 @@ public class GraphchiSerializer {
 
     }
 
+    /*
+     * Simple function which avoids sorting an already sorted matrix.
+     * It just writes the matrix in order to a file in matrix market format.
+     */
     private static void writeSorted(MatrixSource source, BufferedWriter io) throws IOException{
         for(MatrixEntry entry: source.fast()){
             io.write(entry.toString());
@@ -51,18 +55,28 @@ public class GraphchiSerializer {
         source.close();
     }
 
+    /*
+     * Sorts and then writes a matrix to a file in sparse matrix market format.
+     *
+     * Uses the Swapper and Comparator classes (See below.)
+     */
     private static void writeUnsorted(MatrixSource source, BufferedWriter io) throws IOException{
         long[] users = new long[source.getMatrixEntryCount()];
         long[] items = new long[source.getMatrixEntryCount()];
         double[] ratings = new double[source.getMatrixEntryCount()];
         int index = 0;
+
+        //Load arrays with data
         for(MatrixEntry entry : source.fast()){
             users[index] = entry.row + 1; //Convert to base 1 for graphchi
             items[index] = entry.column + 1;
             ratings[index] = entry.rating;
             ++index;
         }
+
         quickSort(0, users.length, new Comparator(users, items, ratings), new Swapper(users, items, ratings));
+
+        //Write to file in matrix market form
         for(int i = 0; i<users.length; ++i){
             io.write(users[i]+" "+items[i]+" "+ratings[i]);
             io.newLine();
@@ -71,6 +85,9 @@ public class GraphchiSerializer {
         source.close();
     }
 
+    /*
+     * Swapper class for sorting the matrices as using fastutil.Sort
+     */
     private static class Swapper implements it.unimi.dsi.fastutil.Swapper{
         long[] users;
         long[] items;
@@ -97,6 +114,9 @@ public class GraphchiSerializer {
         }
     }
 
+    /*
+     * Swapper class for sorting the matrices as using fastutil.Sort
+     */
     private static class Comparator extends AbstractIntComparator {
         long[] users;
         long[] items;

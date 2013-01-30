@@ -110,6 +110,7 @@ public class SgdRatingPredictor implements RatingPredictor{
                 else {
                     //TODO: Remove Debug////////////////////////////////////////
                     //baseline.predict(user, null,
+                    //How should this be used to predict individual ratings? Should it be?
                 }
                 continue;
             }

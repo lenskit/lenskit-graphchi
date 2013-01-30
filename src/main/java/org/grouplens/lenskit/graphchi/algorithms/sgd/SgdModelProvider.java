@@ -78,23 +78,23 @@ public class SgdModelProvider implements Provider<SgdModel> {
                              @Transient @Nonnull ClampingFunction clamp, @Nullable PreferenceDomain domain,
                              @Nullable BaselinePredictor baseline){
         trainMatrix = source;
-        int id = ++globalId;
-        directory = "sgd"+id;
         this.featureCount = 20; // Magic number because GraphChi currently doesn't allow runtime configuration of
                                 // feature counts.
-        this.lambda = lambda;
         this.gamma = gamma;
+        this.lambda = lambda;
         this.clamp = clamp;
+        this.domain = domain;
+        this.baseline = baseline;
 
         //TODO: Remove Debug////////////////////////////////////////////////////////////////////////
         this.graphchi = "/home/danny/GroupLens/graphchi"; //System.getProperty("graphchi.location");
         ////////////////////////////////////////////////////////////////////////////////////////////
-
         if(graphchi == null){
+            //Attempt to default to CWD?
             throw new RuntimeException("No Path for Graphchi Found");
         }
-        this.domain = domain;
-        this.baseline = baseline;
+        int id = ++globalId;
+        directory = "sgd"+id;
     }
 
 
@@ -178,6 +178,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
             throw new RuntimeException(e);
         }
 
+        //Build and run SGD command.
         ProcessBuilder builder = new ProcessBuilder();
         builder.directory(new File(graphchi));
         builder.command(buildCommand(currPath));
@@ -186,6 +187,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
             sgd.waitFor();
 
             //TODO: Remove Debug////////////////////////////////////////
+            //Prints output of GraphChi command
             byte[] buffer = new byte[1024];
             int len;
             while ((len = sgd.getInputStream().read(buffer)) != -1) {
@@ -193,10 +195,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
             }
             ////////////////////////////////////////////////////////////
         }
-        catch(IOException e){
-            throw new RuntimeException(e);
-        }
-        catch(InterruptedException e){
+        catch(Exception e){
             throw new RuntimeException(e);
         }
     }
