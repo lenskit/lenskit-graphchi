@@ -70,6 +70,7 @@
                         <systemProperties>
                             <property>
                                 <name>graphchi.location</name>
+                                <!--Change to the path to graphchi-->
                                 <value>../graphchi</value>
                             </property>
                         </systemProperties>

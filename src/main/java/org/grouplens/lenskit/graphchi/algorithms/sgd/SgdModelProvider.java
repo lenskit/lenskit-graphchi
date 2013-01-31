@@ -86,9 +86,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
         this.domain = domain;
         this.baseline = baseline;
 
-        //TODO: Remove Debug////////////////////////////////////////////////////////////////////////
-        this.graphchi = "/home/danny/GroupLens/graphchi"; //System.getProperty("graphchi.location");
-        ////////////////////////////////////////////////////////////////////////////////////////////
+        this.graphchi =  System.getProperty("graphchi.location");
         if(graphchi == null){
             //Attempt to default to CWD?
             throw new RuntimeException("No Path for Graphchi Found");
