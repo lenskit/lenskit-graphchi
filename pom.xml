@@ -44,6 +44,7 @@
         <grouplens.common.version>0.6.1</grouplens.common.version>
         <lenskit.clean.removeAll>false</lenskit.clean.removeAll>
     </properties>
+
     <build>
         <pluginManagement>
             <plugins>
@@ -70,12 +71,11 @@
                         <systemProperties>
                             <property>
                                 <name>graphchi.location</name>
-                                <!--Change to the path to graphchi-->
                                 <value>../graphchi</value>
                             </property>
                         </systemProperties>
                     </configuration>
-                </plugin>
+                  </plugin>
             </plugins>
         </pluginManagement>
     </build>

@@ -3,7 +3,6 @@ package org.grouplens.lenskit.graphchi.util;
 
 import static org.junit.Assert.*;
 
-import org.grouplens.lenskit.data.snapshot.PreferenceSnapshot;
 import  org.junit.*;
 
 import org.grouplens.lenskit.data.dao.EventCollectionDAO;
@@ -28,7 +27,6 @@ public class TestGraphChiSerializer {
     private static int columns;
     private static int entries;
 
-    static private PreferenceSnapshot prefSnapshot;
     static private String filename = "testserializer.txt.tmp";
 
     private static int eid;
@@ -49,7 +47,7 @@ public class TestGraphChiSerializer {
         rs.add(generateRating(3, 2, 3, 1));
         rs.add(generateRating(3, 3, 3, 1));
         EventCollectionDAO.Factory manager = new EventCollectionDAO.Factory(rs);
-        prefSnapshot = new PackedPreferenceSnapshot.Provider(manager.create()).get();
+        new PackedPreferenceSnapshot.Provider(manager.create()).get();
 
         rows = 3;
         columns = 3;

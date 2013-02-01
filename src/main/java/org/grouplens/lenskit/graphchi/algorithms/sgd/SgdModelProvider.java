@@ -39,6 +39,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +55,7 @@ import java.io.IOException;
 public class SgdModelProvider implements Provider<SgdModel> {
 
     private static int globalId = 0;
-
+    private static Logger logger = LoggerFactory.getLogger(SgdModelProvider.class);
     private UserItemMatrixSource trainMatrix;
     private String directory;
     private int featureCount;
@@ -78,6 +81,9 @@ public class SgdModelProvider implements Provider<SgdModel> {
                              @Transient @Nonnull ClampingFunction clamp, @Nullable PreferenceDomain domain,
                              @Nullable BaselinePredictor baseline){
         trainMatrix = source;
+        if(featureCount != 20) {
+            logger.error("Ignoring feature count of {} and using 20 features.", featureCount);
+        }
         this.featureCount = 20; // Magic number because GraphChi currently doesn't allow runtime configuration of
                                 // feature counts.
         this.gamma = gamma;
@@ -89,7 +95,8 @@ public class SgdModelProvider implements Provider<SgdModel> {
         this.graphchi =  System.getProperty("graphchi.location");
         if(graphchi == null){
             //Attempt to default to CWD?
-            throw new RuntimeException("No Path for Graphchi Found");
+            logger.error("No path for graphchi found. Defaulting to './graphchi'");
+            graphchi = "./graphchi";
         }
         int id = ++globalId;
         directory = "sgd"+id;
@@ -189,7 +196,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
             byte[] buffer = new byte[1024];
             int len;
             while ((len = sgd.getInputStream().read(buffer)) != -1) {
-                System.out.write(buffer, 0, len);
+                //System.out.write(buffer, 0, len);
             }
             ////////////////////////////////////////////////////////////
         }

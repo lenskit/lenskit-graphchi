@@ -57,7 +57,8 @@ public class TestSgdRecommenderBuild {
         }
     }
 
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void testConfigSeparation() {
         LenskitRecommender rec1 = null;
         LenskitRecommender rec2 = null;

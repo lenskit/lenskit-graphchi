@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 @Ignore("Currently this is using FunkSVD's unit tests which are unstable")
 public class TestSgdRecommender {
