@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * SGD recommender builder. It uses GraphChi's SGD algorithm to compute the factorized matrices.
@@ -54,7 +55,7 @@ import java.io.IOException;
  */
 public class SgdModelProvider implements Provider<SgdModel> {
 
-    private static int globalId = 0;
+    private static AtomicInteger globalId = new AtomicInteger(0);
     private static Logger logger = LoggerFactory.getLogger(SgdModelProvider.class);
     private UserItemMatrixSource trainMatrix;
     private String directory;
@@ -98,7 +99,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
             logger.error("No path for graphchi found. Defaulting to './graphchi'");
             graphchi = "./graphchi";
         }
-        int id = ++globalId;
+        int id = globalId.incrementAndGet();
         directory = "sgd"+id;
     }
 
@@ -190,15 +191,6 @@ public class SgdModelProvider implements Provider<SgdModel> {
         try {
             Process sgd = builder.start();
             sgd.waitFor();
-
-            //TODO: Remove Debug////////////////////////////////////////
-            //Prints output of GraphChi command
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = sgd.getInputStream().read(buffer)) != -1) {
-                //System.out.write(buffer, 0, len);
-            }
-            ////////////////////////////////////////////////////////////
         }
         catch(Exception e){
             throw new RuntimeException(e);
