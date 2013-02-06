@@ -7,7 +7,10 @@ import javax.inject.Qualifier;
 import java.lang.annotation.*;
 
 /**
- * The annotation for the number of features used for the SGD algorithm.
+ * The annotation for the number of features used for an algorithm.
+ *
+ * There may be odd warnings associated with this tag since graphchi
+ * currently doesn't allow configuration of features without a rebuild.
  *
  * It defaults to 40.
  */

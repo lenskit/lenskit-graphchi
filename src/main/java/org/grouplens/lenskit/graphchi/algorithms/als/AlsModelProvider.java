@@ -20,11 +20,13 @@ public class AlsModelProvider implements Provider<AlsModel> {
     private static Logger logger = LoggerFactory.getLogger(AlsModelProvider.class);
 
 
+    private int featureCount;
     private UserItemMatrixSource trainMatrix;
     private String directory;
     private double lambda;
     private PreferenceDomain domain;
     private ClampingFunction clamp;
+    private BaselinePredictor baseline;
 
     public AlsModelProvider(@Transient @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount,
                             @RegularizationTerm double lambda,
@@ -33,15 +35,20 @@ public class AlsModelProvider implements Provider<AlsModel> {
     {
         if(featureCount != 20){
             logger.error("Ignoring feature count of {} and defaulting to 20 features", featureCount);
-            trainMatrix = source;
-            this.lambda = lambda;
-            this.clamp  = clamp;
-            this.domain = domain;
         }
-
+        this.featureCount = 20;
+        directory = System.getProperty("graphchi.location");
+        if(directory == null){
+            logger.error("No path for graphchi found. Defaulting to the home directory");
+            directory = "./graphchi";
+        }
+        trainMatrix = source;
+        this.lambda = lambda;
+        this.clamp  = clamp;
+        this.domain = domain;
+        this.baseline = baseline;
     }
     public AlsModel get(){
-
         return null;
     }
 
