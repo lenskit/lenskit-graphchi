@@ -23,7 +23,7 @@ import org.codehaus.plexus.util.FileUtils;
 import org.grouplens.lenskit.baseline.BaselinePredictor;
 import org.grouplens.lenskit.core.Transient;
 import org.grouplens.lenskit.data.pref.PreferenceDomain;
-import org.grouplens.lenskit.graphchi.algorithms.sgd.param.FeatureCount;
+import org.grouplens.lenskit.graphchi.algorithms.param.FeatureCount;
 import org.grouplens.lenskit.graphchi.util.GraphchiSerializer;
 
 import org.grouplens.lenskit.graphchi.util.MatrixEntry;

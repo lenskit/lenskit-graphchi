@@ -1,4 +1,4 @@
-package org.grouplens.lenskit.graphchi.algorithms.sgd.param;
+package org.grouplens.lenskit.graphchi.algorithms.param;
 
 import org.grouplens.grapht.annotation.DefaultInteger;
 import org.grouplens.lenskit.core.Parameter;

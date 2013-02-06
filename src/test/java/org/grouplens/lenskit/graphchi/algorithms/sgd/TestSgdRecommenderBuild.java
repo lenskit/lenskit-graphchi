@@ -11,7 +11,7 @@ import org.grouplens.lenskit.data.dao.DAOFactory;
 import org.grouplens.lenskit.data.dao.EventCollectionDAO;
 import org.grouplens.lenskit.data.event.Rating;
 import org.grouplens.lenskit.data.event.Ratings;
-import org.grouplens.lenskit.graphchi.algorithms.sgd.param.FeatureCount;
+import org.grouplens.lenskit.graphchi.algorithms.param.FeatureCount;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.PreferenceSnapshotMatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
 import org.junit.Before;
