@@ -103,19 +103,17 @@ public class SgdRatingPredictor implements RatingPredictor{
      */
     public void score(long user,  @Nonnull MutableSparseVector vector){
         for(VectorEntry i : vector.fast(VectorEntry.State.EITHER)){
+
+            //If we can't find this item, don't predict for it
             if(itemIds.getIndex(i.getKey()) == -1) {
-                if(baseline == null){
-                    vector.clear(i);
-                }
-                else {
-                    //TODO: Remove Debug////////////////////////////////////////
-                    //baseline.predict(user, null,
-                    //How should this be used to predict individual ratings? Should it be?
-                }
+                vector.clear(i);
                 continue;
             }
             vector.set(i, score(user, i.getKey()));
         }
+
+        //Catch all the unset items and predict for them
+        baseline.predict(user, null, vector, false);
     }
 
     /**
