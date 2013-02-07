@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +38,7 @@ public class AlsModelProvider implements Provider<AlsModel> {
     private ClampingFunction clamp;
     private BaselinePredictor baseline;
 
+    @Inject
     public AlsModelProvider(@Transient @Nonnull UserItemMatrixSource source,@FeatureCount int featureCount,
                             @RegularizationTerm double lambda,
                             @Transient @Nonnull ClampingFunction clamp, @Nullable PreferenceDomain domain,
@@ -99,9 +101,9 @@ public class AlsModelProvider implements Provider<AlsModel> {
         catch(IOException e){
             throw new RuntimeException(e);
         }
-        return null;//return new AlsModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix),
-                //trainMatrix.getUserIndexes(), trainMatrix.getItemIndexes(), featureCount, clamp,
-                //baseline);
+       return new AlsModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix),
+                trainMatrix.getUserIndexes(), trainMatrix.getItemIndexes(), featureCount, clamp,
+                baseline);
     }
 
     /*

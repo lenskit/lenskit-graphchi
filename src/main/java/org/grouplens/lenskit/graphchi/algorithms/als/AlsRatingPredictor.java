@@ -26,6 +26,7 @@ import org.grouplens.lenskit.data.UserHistory;
 import org.grouplens.lenskit.graphchi.util.matrices.Matrix;
 import org.grouplens.lenskit.transform.clamp.ClampingFunction;
 import org.grouplens.lenskit.util.Index;
+import org.grouplens.lenskit.vectors.ImmutableSparseVector;
 import org.grouplens.lenskit.vectors.MutableSparseVector;
 import org.grouplens.lenskit.vectors.SparseVector;
 import org.grouplens.lenskit.vectors.VectorEntry;
@@ -113,7 +114,7 @@ public class AlsRatingPredictor implements RatingPredictor{
         }
 
         //Catch all the unset items and predict for them
-        baseline.predict(user, null, vector, false);
+        baseline.predict(user, new ImmutableSparseVector(), vector, false);
     }
 
     /**
