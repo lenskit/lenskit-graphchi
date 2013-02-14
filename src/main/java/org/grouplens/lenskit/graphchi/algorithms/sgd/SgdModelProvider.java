@@ -23,8 +23,8 @@ import org.codehaus.plexus.util.FileUtils;
 import org.grouplens.lenskit.baseline.BaselinePredictor;
 import org.grouplens.lenskit.core.Transient;
 import org.grouplens.lenskit.data.pref.PreferenceDomain;
+import org.grouplens.lenskit.graphchi.algorithms.GraphchiProvider;
 import org.grouplens.lenskit.graphchi.algorithms.param.FeatureCount;
-import org.grouplens.lenskit.graphchi.util.GraphchiSerializer;
 
 import org.grouplens.lenskit.graphchi.util.MatrixEntry;
 import org.grouplens.lenskit.graphchi.util.matrices.DenseMatrix;
@@ -53,17 +53,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Daniel Gratzer < danny.gratzer@gmail.com >
  */
-public class SgdModelProvider implements Provider<SgdModel> {
+public class SgdModelProvider extends GraphchiProvider implements Provider<SgdModel> {
 
-    private static AtomicInteger globalId = new AtomicInteger(0);
     private static Logger logger = LoggerFactory.getLogger(SgdModelProvider.class);
-    private UserItemMatrixSource trainMatrix;
-    private String directory;
     private int featureCount;
     private double lambda;
     private double gamma;
     private ClampingFunction clamp;
-    private String graphchi;
     private PreferenceDomain domain;
     private BaselinePredictor baseline;
 
@@ -81,7 +77,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
                              @LearningRate double gamma, @RegularizationTerm double lambda,
                              @Transient @Nonnull ClampingFunction clamp, @Nullable PreferenceDomain domain,
                              @Nullable BaselinePredictor baseline){
-        trainMatrix = source;
+        super(source);
         if(featureCount != 20) {
             logger.error("Ignoring feature count of {} and using 20 features.", featureCount);
         }
@@ -93,14 +89,6 @@ public class SgdModelProvider implements Provider<SgdModel> {
         this.domain = domain;
         this.baseline = baseline;
 
-        this.graphchi =  System.getProperty("graphchi.location");
-        if(graphchi == null){
-            //Attempt to default to CWD?
-            logger.error("No path for graphchi found. Defaulting to './graphchi'");
-            graphchi = "./graphchi";
-        }
-        int id = globalId.incrementAndGet();
-        directory = "sgd"+id;
     }
 
 
@@ -113,21 +101,26 @@ public class SgdModelProvider implements Provider<SgdModel> {
      * @return an SGDModel with a filled U and V matrix
      */
     public SgdModel get() {
-        String currPath = new File(directory).getAbsolutePath()+"/";
-
-        //Serialize data and run graphchi on it
-        runGraphchi(currPath);
-        String fileroot = currPath+"/train";
-
-        //Get the results
         MatrixSource u;
         MatrixSource v;
         try{
+            //Get the results
+            String fileroot = new File(super.outputDir).getAbsolutePath()+"/train";
+            super.initGraphchi();
             u = BufferedReaderMatrixSource.getDenseMatrixSource(fileroot + "_U.mm", true, true);
             v = BufferedReaderMatrixSource.getDenseMatrixSource(fileroot + "_V.mm", true, true);
         }
+        
         catch(IOException e){
             throw new RuntimeException(e);
+        }
+        finally {
+            try{
+                FileUtils.deleteDirectory(new File(outputDir));
+            }
+            catch(IOException e){
+                throw new RuntimeException(e);
+            }
         }
 
         //These will be used to generate the DenseMatrix objects for the model
@@ -144,63 +137,15 @@ public class SgdModelProvider implements Provider<SgdModel> {
             //Item Feature -> Preference
             vMatrix[entry.row][entry.column] = entry.rating;
         }
-
-        //Clean up temps
-        try{
-            FileUtils.deleteDirectory(new File(directory));
-        }
-        catch(IOException e){
-            throw new RuntimeException(e);
-        }
         return new SgdModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix),
-                trainMatrix.getUserIndexes(), trainMatrix.getItemIndexes(), featureCount, clamp,
+                super.input.getUserIndexes(), super.input.getItemIndexes(), featureCount, clamp,
                 baseline);
-    }
-
-    /*
-     * Creates a new directory called sgd**** where **** is an int ID
-     * Serializes the source matrix into a matrix-market file.
-     * If any exception occurs, it is thrown as a RuntimeException.
-     */
-    private void serializeData() throws IOException{
-        File dir = new File(directory);
-        if(!(dir.mkdir()) &&  !dir.exists()) {
-            throw new IOException("Couldn't make new directory "+directory);
-        }
-        GraphchiSerializer.serializeMatrixSource(trainMatrix, directory+"/train");
-    }
-
-
-    /*
-     * Calls serialize data and then invokes Graphchi's SGD algorithm in the matrix market format.
-     *
-     * All resulting files are stored in the same directory as
-     */
-    private void runGraphchi(String currPath){
-        try{
-            serializeData();
-        }
-        catch(IOException e){
-            throw new RuntimeException(e);
-        }
-
-        //Build and run SGD command.
-        ProcessBuilder builder = new ProcessBuilder();
-        builder.directory(new File(graphchi));
-        builder.command(buildCommand(currPath));
-        try {
-            Process sgd = builder.start();
-            sgd.waitFor();
-        }
-        catch(Exception e){
-            throw new RuntimeException(e);
-        }
     }
 
     /*
      * Builds the arguments for the SGD command. It supplies an optional upper and lower bound if the PreferenceDomain is given.
      */
-    private String[] buildCommand(String path){
+    protected String[] buildCommand(String currPath){
         String[] args;
         if(domain!=null){
             args = new String[8];
@@ -209,7 +154,7 @@ public class SgdModelProvider implements Provider<SgdModel> {
             args = new String[6];
         }
         args[0] = "./toolkits/collaborative_filtering/sgd";
-        args[1] = "--training="+ path+"train";
+        args[1] = "--training="+ currPath+"/train";
         args[2] = "--sgd_lambda="+ lambda;
         args[3] = "--sgd_gamma=" + gamma;
         args[4] = "--max_iter=6";
