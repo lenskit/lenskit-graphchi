@@ -87,7 +87,9 @@ public class SgdModelProvider extends GraphchiProvider<SgdModel>  {
 
     }
 
-
+    /*
+     * Gathers the U and V matrix and bundles them into an SgdModel
+     */
     protected SgdModel gatherResults(String fileroot) {
         MatrixSource u;
         MatrixSource v;

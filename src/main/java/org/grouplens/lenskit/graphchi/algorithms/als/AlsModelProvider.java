@@ -19,17 +19,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class AlsModelProvider extends GraphchiProvider<AlsModel> {
-    private static AtomicInteger globalId = new AtomicInteger(0);
     private static Logger logger = LoggerFactory.getLogger(AlsModelProvider.class);
 
 
     private int featureCount;
     private UserItemMatrixSource trainMatrix;
-    private String graphchi;
-    private String directory;
     private double lambda;
     private PreferenceDomain domain;
     private ClampingFunction clamp;
@@ -46,19 +42,16 @@ public class AlsModelProvider extends GraphchiProvider<AlsModel> {
             logger.error("Ignoring feature count of {} and defaulting to 20 features", featureCount);
         }
         this.featureCount = 20;
-        graphchi = System.getProperty("graphchi.location");
-        if(graphchi == null){
-            logger.error("No path for graphchi found. Defaulting to the home graphchi");
-            graphchi = "./graphchi";
-        }
         trainMatrix = source;
         this.lambda = lambda;
         this.clamp  = clamp;
         this.domain = domain;
         this.baseline = baseline;
-        directory = "als"+globalId.incrementAndGet();
     }
 
+    /*
+     * Gathers the U and V matrix and bundles them into a AlsModel
+     */
     protected AlsModel gatherResults(String fileroot){
         //Get the results
         MatrixSource u;

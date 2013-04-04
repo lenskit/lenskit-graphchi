@@ -2,7 +2,6 @@ package org.grouplens.lenskit.graphchi.algorithms;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.grouplens.lenskit.graphchi.util.GraphchiSerializer;
-import org.grouplens.lenskit.graphchi.util.matrixmarket.BufferedReaderMatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -30,6 +29,11 @@ abstract public class GraphchiProvider<T> implements Provider<T> {
         this.input = input;
     }
 
+    /**
+     * Does the leg work for actually running graphchi and cleaning up the temporary files.
+     * Calls {@code buildCommand} and {@code gatherResults} to get the results and produce a {@code T}
+     * @return The model created by {@code gatherResults}
+     */
     public T get(){
         try{
             initGraphchi();
@@ -55,7 +59,19 @@ abstract public class GraphchiProvider<T> implements Provider<T> {
         runGraphchi();
     }
 
+    /**
+     * Builds the command to run graphchi.
+     * @param currPath The path to GraphChi
+     * @return The command in an array as it would be supplied to a {@code ProcessBuilder}
+     */
     protected abstract String[] buildCommand(String currPath);
+
+    /**
+     * Used to build the model using the results of a GraphChi run
+     * @param path A string of the form "path/to/graphchi/${train}" where train is the
+     *             is the name of the training dataset supplied to graphchi.
+     * @return A freshly created {@code T}.
+     */
     protected abstract T        gatherResults(String path);
 
     /**
