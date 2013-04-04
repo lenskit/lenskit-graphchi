@@ -19,7 +19,6 @@
 
 package org.grouplens.lenskit.graphchi.algorithms.sgd;
 
-import org.codehaus.plexus.util.FileUtils;
 import org.grouplens.lenskit.baseline.BaselinePredictor;
 import org.grouplens.lenskit.core.Transient;
 import org.grouplens.lenskit.data.pref.PreferenceDomain;
@@ -38,14 +37,11 @@ import org.grouplens.lenskit.iterative.params.RegularizationTerm;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * SGD recommender builder. It uses GraphChi's SGD algorithm to compute the factorized matrices.
@@ -53,7 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Daniel Gratzer < danny.gratzer@gmail.com >
  */
-public class SgdModelProvider extends GraphchiProvider implements Provider<SgdModel> {
+public class SgdModelProvider extends GraphchiProvider<SgdModel>  {
 
     private static Logger logger = LoggerFactory.getLogger(SgdModelProvider.class);
     private int featureCount;
@@ -92,35 +88,16 @@ public class SgdModelProvider extends GraphchiProvider implements Provider<SgdMo
     }
 
 
-    /**
-     * get() serializes the input matrix given in the constructor.
-     * It then runs GraphChi's SGD algorithm on the file and loads the results into an SGDModel.
-     * Finally it deletes the whole temporary directory.
-     *
-     * If any IOException occurs during the serializing, reading, or executing of graphchi, it is thrown as a RuntimeException.
-     * @return an SGDModel with a filled U and V matrix
-     */
-    public SgdModel get() {
+    protected SgdModel gatherResults(String fileroot) {
         MatrixSource u;
         MatrixSource v;
         try{
             //Get the results
-            String fileroot = new File(super.outputDir).getAbsolutePath()+"/train";
-            super.initGraphchi();
             u = BufferedReaderMatrixSource.getDenseMatrixSource(fileroot + "_U.mm", true, true);
             v = BufferedReaderMatrixSource.getDenseMatrixSource(fileroot + "_V.mm", true, true);
         }
-        
         catch(IOException e){
             throw new RuntimeException(e);
-        }
-        finally {
-            try{
-                FileUtils.deleteDirectory(new File(outputDir));
-            }
-            catch(IOException e){
-                throw new RuntimeException(e);
-            }
         }
 
         //These will be used to generate the DenseMatrix objects for the model

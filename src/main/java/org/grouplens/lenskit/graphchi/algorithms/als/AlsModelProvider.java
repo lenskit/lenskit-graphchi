@@ -1,11 +1,10 @@
 package org.grouplens.lenskit.graphchi.algorithms.als;
 
-import org.codehaus.plexus.util.FileUtils;
 import org.grouplens.lenskit.baseline.BaselinePredictor;
 import org.grouplens.lenskit.core.Transient;
 import org.grouplens.lenskit.data.pref.PreferenceDomain;
+import org.grouplens.lenskit.graphchi.algorithms.GraphchiProvider;
 import org.grouplens.lenskit.graphchi.algorithms.param.FeatureCount;
-import org.grouplens.lenskit.graphchi.util.GraphchiSerializer;
 import org.grouplens.lenskit.graphchi.util.MatrixEntry;
 import org.grouplens.lenskit.graphchi.util.matrices.DenseMatrix;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.BufferedReaderMatrixSource;
@@ -19,12 +18,10 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class AlsModelProvider implements Provider<AlsModel> {
+public class AlsModelProvider extends GraphchiProvider<AlsModel> {
     private static AtomicInteger globalId = new AtomicInteger(0);
     private static Logger logger = LoggerFactory.getLogger(AlsModelProvider.class);
 
@@ -44,6 +41,7 @@ public class AlsModelProvider implements Provider<AlsModel> {
                             @Transient @Nonnull ClampingFunction clamp, @Nullable PreferenceDomain domain,
                             @Nullable BaselinePredictor baseline)
     {
+        super(source);
         if(featureCount != 20){
             logger.error("Ignoring feature count of {} and defaulting to 20 features", featureCount);
         }
@@ -61,13 +59,7 @@ public class AlsModelProvider implements Provider<AlsModel> {
         directory = "als"+globalId.incrementAndGet();
     }
 
-    public AlsModel get(){
-        String currPath = new File(directory).getAbsolutePath()+"/";
-
-        //Serialize data and run graphchi on it
-        runGraphchi(currPath);
-        String fileroot = currPath+"/train";
-
+    protected AlsModel gatherResults(String fileroot){
         //Get the results
         MatrixSource u;
         MatrixSource v;
@@ -93,63 +85,16 @@ public class AlsModelProvider implements Provider<AlsModel> {
             //Item Feature -> Preference
             vMatrix[entry.row][entry.column] = entry.rating;
         }
-
-        //Clean up temps
-        try{
-            FileUtils.deleteDirectory(new File(directory));
-        }
-        catch(IOException e){
-            throw new RuntimeException(e);
-        }
        return new AlsModel(new DenseMatrix(uMatrix), new DenseMatrix(vMatrix),
                 trainMatrix.getUserIndexes(), trainMatrix.getItemIndexes(), featureCount, clamp,
                 baseline);
     }
 
-    /*
-     * Creates a new directory called als**** where **** is an int ID
-     * Serializes the source matrix into a matrix-market file.
-     * If any exception occurs, it is thrown as a RuntimeException.
-     */
-    private void serializeData() throws IOException{
-        File dir = new File(directory);
-        if(!(dir.mkdir()) &&  !dir.exists()) {
-            throw new IOException("Couldn't make new directory "+directory);
-        }
-        GraphchiSerializer.serializeMatrixSource(trainMatrix, directory + "/train");
-    }
-
-
-    /*
-     * Calls serialize data and then invokes Graphchi's als algorithm in the matrix market format.
-     *
-     * All resulting files are stored in the same directory as
-     */
-    private void runGraphchi(String currPath){
-        try{
-            serializeData();
-        }
-        catch(IOException e){
-            throw new RuntimeException(e);
-        }
-
-        //Build and run ALS command.
-        ProcessBuilder builder = new ProcessBuilder();
-        builder.directory(new File(graphchi));
-        builder.command(buildCommand(currPath));
-        try {
-            Process als = builder.start();
-            als.waitFor();
-        }
-        catch(Exception e){
-            throw new RuntimeException(e);
-        }
-    }
 
     /*
      * Builds the arguments for the ALS command. It supplies an optional upper and lower bound if the PreferenceDomain is given.
      */
-    private String[] buildCommand(String path){
+    protected String[] buildCommand(String path){
         String[] args;
         if(domain!=null){
             args = new String[7];

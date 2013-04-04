@@ -2,6 +2,7 @@ package org.grouplens.lenskit.graphchi.algorithms;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.grouplens.lenskit.graphchi.util.GraphchiSerializer;
+import org.grouplens.lenskit.graphchi.util.matrixmarket.BufferedReaderMatrixSource;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -11,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-abstract public class GraphchiProvider {
+abstract public class GraphchiProvider<T> implements Provider<T> {
     private static Logger logger = LoggerFactory.getLogger("GraphchiProvider");
     private static AtomicInteger globalId = new AtomicInteger(0);
 
@@ -29,21 +30,41 @@ abstract public class GraphchiProvider {
         this.input = input;
     }
 
-   public void initGraphchi() throws IOException{
-        serializeData(outputDir);
-        runGraphchi(outputDir);
+    public T get(){
+        try{
+            initGraphchi();
+            //Get the results
+            String fileroot = new File(outputDir).getAbsolutePath()+"/train";
+            return gatherResults(fileroot);
+        }
+        catch(IOException e){
+            throw new RuntimeException(e);
+        }
+        finally {
+            try{
+                FileUtils.deleteDirectory(new File(outputDir));
+            }
+            catch(IOException e){
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+   private void initGraphchi() throws IOException{
+        serializeData();
+        runGraphchi();
     }
 
     protected abstract String[] buildCommand(String currPath);
+    protected abstract T        gatherResults(String path);
 
     /**
      *
      * Serializes the input matrix into a matrixmarket file.
      *
-     * @param location The target location for the data
      * @throws IOException If anything in writing out the file throws an IOException
      */
-    protected void serializeData(String location) throws IOException{
+    protected void serializeData() throws IOException{
         File dir = new File(outputDir);
         if(!(dir.mkdir()) ||  !dir.exists()) {
             throw new IOException("Couldn't make new outputDir "+outputDir);
@@ -53,13 +74,11 @@ abstract public class GraphchiProvider {
 
     /**
      * Invokes graphchi on the serialized data. It uses the command provided by <code>buildCommand</code>
-     * @param currPath The path to run the command from
      */
-    protected void runGraphchi(String currPath){
+    protected void runGraphchi(){
         ProcessBuilder builder = new ProcessBuilder();
         builder.directory(new File(graphchi));
         String path = new File(outputDir).getAbsolutePath();
-        System.out.println("Stuff should be written to: " + path);
         builder.command(buildCommand(path));
         try {
             Process algorithm = builder.start();
