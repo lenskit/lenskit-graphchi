@@ -19,7 +19,7 @@
 
 package org.grouplens.lenskit.graphchi.algorithms.als;
 
-import org.grouplens.lenskit.core.ScoreBasedItemRecommender;
+import org.grouplens.lenskit.basic.ScoreBasedItemRecommender;
 import org.grouplens.lenskit.data.dao.DataAccessObject;
 
 import javax.inject.Inject;

@@ -1,11 +1,13 @@
 package org.grouplens.lenskit.graphchi.algorithms;
 
 import org.codehaus.plexus.util.FileUtils;
+import org.grouplens.lenskit.core.Transient;
 import org.grouplens.lenskit.graphchi.util.GraphchiSerializer;
 import org.grouplens.lenskit.graphchi.util.matrixmarket.UserItemMatrixSource;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.inject.Provider;
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +21,7 @@ abstract public class GraphchiProvider<T> implements Provider<T> {
     protected String outputDir;
     protected UserItemMatrixSource input;
 
-    public GraphchiProvider(UserItemMatrixSource input){
+    public GraphchiProvider(@Transient @Nonnull UserItemMatrixSource input){
         this.graphchi =  System.getProperty("graphchi.location");
         if(graphchi == null){
             logger.error("No path for graphchi found. Defaulting to './graphchi'");
