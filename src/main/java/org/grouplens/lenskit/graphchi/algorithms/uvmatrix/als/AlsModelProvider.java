@@ -1,4 +1,4 @@
-package org.grouplens.lenskit.graphchi.algorithms.als;
+package org.grouplens.lenskit.graphchi.algorithms.uvmatrix.als;
 
 import org.grouplens.lenskit.baseline.BaselinePredictor;
 import org.grouplens.lenskit.core.Transient;

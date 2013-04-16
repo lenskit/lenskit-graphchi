@@ -16,9 +16,8 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
+package org.grouplens.lenskit.graphchi.algorithms.uvmatrix;
 
-package org.grouplens.lenskit.graphchi.algorithms.als;
-import org.grouplens.grapht.annotation.DefaultProvider;
 import org.grouplens.lenskit.baseline.BaselinePredictor;
 import org.grouplens.lenskit.core.Shareable;
 import org.grouplens.lenskit.graphchi.util.matrices.Matrix;
@@ -27,9 +26,8 @@ import org.grouplens.lenskit.util.Index;
 
 import java.io.Serializable;
 
-@DefaultProvider(AlsModelProvider.class)
 @Shareable
-public class AlsModel implements Serializable {
+abstract public class UVModel implements Serializable {
     public Matrix u;
     public Matrix v;
     public int featureCount;
@@ -38,7 +36,7 @@ public class AlsModel implements Serializable {
     public ClampingFunction clamp;
     public BaselinePredictor baseline;
 
-    public AlsModel(Matrix u, Matrix v, Index uids, Index iids, int featureCount, ClampingFunction clamp,
+    public UVModel(Matrix u, Matrix v, Index uids, Index iids, int featureCount, ClampingFunction clamp,
                     BaselinePredictor baseline){
         userIndex = uids;
         itemIndex = iids;
@@ -49,3 +47,4 @@ public class AlsModel implements Serializable {
         this.baseline = baseline;
     }
 }
+

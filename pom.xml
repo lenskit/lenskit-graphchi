@@ -71,7 +71,7 @@
                         <systemProperties>
                             <property>
                                 <name>graphchi.location</name>
-                                <value>../graphchi</value>
+                                <value>./graphchi</value>
                             </property>
                         </systemProperties>
                     </configuration>

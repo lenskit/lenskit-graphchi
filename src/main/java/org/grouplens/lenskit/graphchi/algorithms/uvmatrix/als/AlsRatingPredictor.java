@@ -17,29 +17,23 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-package org.grouplens.lenskit.graphchi.algorithms.sgd;
+package org.grouplens.lenskit.graphchi.algorithms.uvmatrix.als;
 
-import org.grouplens.lenskit.basic.ScoreBasedItemRecommender;
 import org.grouplens.lenskit.data.dao.DataAccessObject;
-
+import org.grouplens.lenskit.graphchi.algorithms.uvmatrix.UVRatingPredictor;
 import javax.inject.Inject;
 
 /**
- * The recommender for the GraphChi SGD Algorithm. Currently it doesn't use user history.
- * Other than this, it behaves identically to ScoreBasedItemRecommender.
+ * The rating predictor associated with GraphChi's ALS algorithm.
+ *
+ * Currently it does not use folding in. Rating prediction methods are similar
+ * to the ones described at <a href="http://bickson.blogspot.com/2012/08/collaborative-filtering-with-graphchi.html">Dr. Bickson's blog</a>.
  *
  * @author Daniel Gratzer < danny.gratzer@gmail.com >
  */
-public class SgdRecommender extends ScoreBasedItemRecommender {
-
+public class AlsRatingPredictor extends UVRatingPredictor {
     @Inject
-    public SgdRecommender(DataAccessObject dao, SgdRatingPredictor pred){
-        super (dao, pred);
+    AlsRatingPredictor(AlsModel model, DataAccessObject dao){
+        super(model, dao);
     }
-
-    @Override
-    public boolean canUseHistory(){
-        return false;
-    }
-
 }

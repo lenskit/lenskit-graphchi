@@ -1,4 +1,4 @@
-package org.grouplens.lenskit.graphchi.algorithms.sgd;
+package org.grouplens.lenskit.graphchi.algorithms.uvmatrix.sgd;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import org.grouplens.lenskit.*;

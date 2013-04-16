@@ -1,4 +1,4 @@
-package org.grouplens.lenskit.graphchi.algorithms.sgd;
+package org.grouplens.lenskit.graphchi.algorithms.uvmatrix.sgd;
 
 import org.grouplens.lenskit.ItemRecommender;
 import org.grouplens.lenskit.RatingPredictor;
@@ -21,7 +21,6 @@ import static org.hamcrest.Matchers.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class TestSgdRecommenderBuild {
 
 

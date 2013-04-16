@@ -17,35 +17,22 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-package org.grouplens.lenskit.graphchi.algorithms.sgd;
+package org.grouplens.lenskit.graphchi.algorithms.uvmatrix.als;
 import org.grouplens.grapht.annotation.DefaultProvider;
 import org.grouplens.lenskit.baseline.BaselinePredictor;
 import org.grouplens.lenskit.core.Shareable;
+import org.grouplens.lenskit.graphchi.algorithms.uvmatrix.UVModel;
 import org.grouplens.lenskit.graphchi.util.matrices.Matrix;
 import org.grouplens.lenskit.transform.clamp.ClampingFunction;
 import org.grouplens.lenskit.util.Index;
 
 import java.io.Serializable;
 
-@DefaultProvider(SgdModelProvider.class)
+@DefaultProvider(AlsModelProvider.class)
 @Shareable
-public class SgdModel implements Serializable {
-    public Matrix u;
-    public Matrix v;
-    public int featureCount;
-    public Index userIndex;
-    public Index itemIndex;
-    public ClampingFunction clamp;
-    public BaselinePredictor baseline;
-
-    public SgdModel(Matrix u, Matrix v, Index uids, Index iids, int featureCount, ClampingFunction clamp,
+public class AlsModel extends UVModel implements Serializable {
+    public AlsModel(Matrix u, Matrix v, Index uids, Index iids, int featureCount, ClampingFunction clamp,
                     BaselinePredictor baseline){
-        userIndex = uids;
-        itemIndex = iids;
-        this.u = u;
-        this.v = v;
-        this.featureCount = featureCount;
-        this.clamp = clamp;
-        this.baseline = baseline;
+        super(u, v, uids, iids, featureCount, clamp, baseline);
     }
 }
